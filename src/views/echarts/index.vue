@@ -5,7 +5,7 @@
 <script>
 import { ref, reactive, watch, computed, toRefs } from 'vue'
 import { useStore, mapMutations } from 'vuex'
-import barGradient from '../../components/echarts/barGradient'
+import barGradient from '../../components/echarts/barGradient.vue'
 export default {
   name: 'index',
   components: {
