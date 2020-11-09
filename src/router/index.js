@@ -15,6 +15,19 @@ const router = createRouter({
           component: () => import('../views/echarts/index.vue')
         }
       ]
+    },
+    {
+      path: '/layouts',
+      name: 'layouts',
+      component: () => import('../layouts/index.vue'),
+      redirect: '/layouts/form',
+      children: [
+        {
+          path: 'form',
+          name: 'form',
+          component: () => import('../views/form/index.vue')
+        }
+      ]
     }
   ]
 })

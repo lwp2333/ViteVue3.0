@@ -406,7 +406,7 @@ export const option = {
         textStyle: {
           // 其余属性默认使用全局文本样式，详见TEXTSTYLE
           color: '#fff',
-          fontSize: 50
+          fontSize: 18
         },
         formatter: '{value}'
       },
@@ -469,7 +469,7 @@ export const option = {
 
 function _pie1() {
   let dataArr = []
-  for (var i = 0; i < 8; i++) {
+  for (let i = 0; i < 8; i++) {
     dataArr.push({
       name: (i + 1).toString(),
       value: 20,
@@ -487,7 +487,7 @@ function _pie1() {
 
 function _pie2() {
   let dataArr = []
-  for (var i = 0; i < 8; i++) {
+  for (let i = 0; i < 8; i++) {
     if (i % 2 === 0) {
       dataArr.push({
         name: (i + 1).toString(),
@@ -519,7 +519,7 @@ function _pie2() {
 
 function _pie3() {
   let dataArr = []
-  for (var i = 0; i < 100; i++) {
+  for (let i = 0; i < 100; i++) {
     if (i % 2 === 0) {
       dataArr.push({
         name: (i + 1).toString(),
@@ -552,7 +552,7 @@ function _pie3() {
 function _pieData(data) {
   let _data = data
   let dataArr = []
-  for (var i = 0; i < 5; i++) {
+  for (let i = 0; i < 5; i++) {
     if (i === 2) {
       let dt = data[0].unit ? 25 : Number(data[0].value)
       dataArr.push({

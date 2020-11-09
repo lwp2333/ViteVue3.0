@@ -1,5 +1,5 @@
 <template>
-  <div ref="echartRef" id="echartId"></div>
+  <div id="echartId"></div>
 </template>
 
 <script>
@@ -10,14 +10,11 @@ import { option } from '../../constant/echartsOption'
 export default {
   name: 'Echarts',
   setup(props) {
-    const echartRef = ref(null)
-    let myEcharts = reactive(null)
+    let myEcharts = reactive({})
     let timer = reactive(null)
-
     const doing = () => {
       let option = myEcharts.getOption()
       option.series[3].startAngle = option.series[3].startAngle - 1
-      option.series[6].data[0].value = option.series[6].data[0].value + 1
       myEcharts.setOption(option)
     }
 
@@ -49,9 +46,7 @@ export default {
     onBeforeUnmount(() => {
       window.removeEventListener('resize', resizeEcharts)
     })
-    return {
-      echartRef
-    }
+    return {}
   }
 }
 </script>
