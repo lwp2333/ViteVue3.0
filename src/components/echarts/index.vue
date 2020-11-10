@@ -19,7 +19,7 @@ export default {
     }
 
     const startTimer = () => {
-      timer = setInterval(doing, 100)
+      timer = setInterval(doing, 120)
     }
 
     const stopTimer = () => {

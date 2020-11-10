@@ -21,7 +21,7 @@ export const NotSelect = str => {
   return {
     required: true,
     message: `请选择${str}`,
-    trigger: 'change|blur',
+    trigger: 'change',
     type: 'array'
   }
 }
@@ -35,7 +35,7 @@ export const NotRadio = str => {
   return {
     required: true,
     message: `请选择${str}`,
-    trigger: 'change|blur',
+    trigger: 'change',
     type: 'any'
   }
 }

@@ -1,35 +1,23 @@
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 import { createRouter, createWebHashHistory } from 'vue-router'
+import constantRoutes from './home'
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes: [
-    {
-      path: '/',
-      name: '/',
-      component: () => import('../App.vue'),
-      redirect: '/echarts',
-      children: [
-        {
-          path: 'echarts',
-          name: 'echarts',
-          component: () => import('../views/echarts/index.vue')
-        }
-      ]
-    },
-    {
-      path: '/layouts',
-      name: 'layouts',
-      component: () => import('../layouts/index.vue'),
-      redirect: '/layouts/form',
-      children: [
-        {
-          path: 'form',
-          name: 'form',
-          component: () => import('../views/form/index.vue')
-        }
-      ]
-    }
-  ]
+  routes: [...constantRoutes]
+})
+NProgress.configure({ showSpinner: false })
+router.beforeEach((to, from, next) => {
+  NProgress.start()
+  if (to.meta.title) {
+    document.title = to.meta.title
+  }
+  next()
+})
+
+router.afterEach((to, from, next) => {
+  NProgress.done()
 })
 
 export default router

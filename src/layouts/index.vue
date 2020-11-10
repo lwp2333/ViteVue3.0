@@ -1,11 +1,11 @@
 <template>
   <a-layout class="layOut">
     <a-layout-header class="header">
-      <div class="logo">文案馆</div>
+      <div class="logo">枯木逢春</div>
       <div class="right">
         <!-- 其他东西 -->
         <div class="avatar">
-          <a-avatar :size="42" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+          <a-avatar :size="42" src="../../static/img/avatar.png" />
           <!-- <a-dropdown>
             <a-button type="link">
               <template #icon>
@@ -30,14 +30,14 @@
       </div>
     </a-layout-header>
     <a-layout>
-      <a-layout-sider width="160" collapsedWidth="0" breakpoint="lg" style="background: #fff">
-        <a-menu mode="inline" v-model:selectedKeys="selectedKeys2" v-model:openKeys="openKeys">
+      <a-layout-sider width="160" collapsedWidth="0" breakpoint="lg">
+        <a-menu theme="dark" mode="inline" v-model:selectedKeys="selectedKeys" v-model:openKeys="openKeys">
           <a-sub-menu key="sub1">
             <template #title>
               <span><user-outlined />用户中心</span>
             </template>
-            <a-menu-item key="1">option1</a-menu-item>
-            <a-menu-item key="2">option2</a-menu-item>
+            <a-menu-item key="1" :to="{ path: '/layouts/form' }">表单</a-menu-item>
+            <a-menu-item key="2" :to="{ path: '/layouts/amap' }">地图</a-menu-item>
             <a-menu-item key="3">option3</a-menu-item>
             <a-menu-item key="4">option4</a-menu-item>
           </a-sub-menu>
@@ -87,12 +87,10 @@ export default {
     NotificationOutlined
   },
   setup() {
-    const selectedKeys1 = ref(['2'])
-    const selectedKeys2 = ref(['1'])
+    const selectedKeys = ref(['1'])
     const openKeys = ref(['sub1'])
     return {
-      selectedKeys1,
-      selectedKeys2,
+      selectedKeys,
       openKeys
     }
   }
@@ -116,7 +114,7 @@ export default {
       align-items: center;
       color: #ffffff;
       background: rgba(255, 255, 255, 0.2);
-      border-radius: 24%;
+      border-radius: 8%;
       font-size: 14px;
       line-height: 14px;
     }

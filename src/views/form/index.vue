@@ -11,7 +11,7 @@
       </a-select>
     </a-form-item>
     <a-form-item label="活动时间" required name="date">
-      <a-date-picker v-model:value="form.date1" show-time type="date" placeholder="Pick a date" style="width: 100%" />
+      <a-date-picker format="YYYY-MM-DD HH:mm:ss" valueFormat="YYYY-MM-DD HH:mm:ss" v-model:value="form.date" show-time type="date" />
     </a-form-item>
     <a-form-item label="是否发布" name="publish">
       <a-switch v-model:checked="form.publish" />
@@ -42,6 +42,8 @@
 <script>
 import { reactive, ref, onMounted, toRefs } from 'vue'
 import { NotEmpty, NotSelect, NotRadio, limitStr } from '../../utils/validate'
+import moment from 'moment'
+import 'moment/dist/locale/zh-cn'
 export default {
   setup() {
     let ruleForm = ref(null)
