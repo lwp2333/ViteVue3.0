@@ -31,14 +31,14 @@
     </a-layout-header>
     <a-layout>
       <a-layout-sider width="160" collapsedWidth="0" breakpoint="lg">
-        <a-menu theme="dark" mode="inline" v-model:selectedKeys="selectedKeys" v-model:openKeys="openKeys">
+        <a-menu theme="dark" mode="inline" v-model:selectedKeys="selectedKeys" v-model:openKeys="openKeys" @click="link($event)">
           <a-sub-menu key="sub1">
             <template #title>
               <span><user-outlined />用户中心</span>
             </template>
-            <a-menu-item key="1" :to="{ path: '/layouts/form' }">表单</a-menu-item>
-            <a-menu-item key="2" :to="{ path: '/layouts/amap' }">地图</a-menu-item>
-            <a-menu-item key="3">option3</a-menu-item>
+            <a-menu-item key="/layouts/form">表单</a-menu-item>
+            <a-menu-item key="/layouts/amap">地图</a-menu-item>
+            <a-menu-item key="/layouts/table">表格</a-menu-item>
             <a-menu-item key="4">option4</a-menu-item>
           </a-sub-menu>
           <a-sub-menu key="sub2">
@@ -78,6 +78,7 @@
 <script>
 import { UserOutlined, LaptopOutlined, NotificationOutlined } from '@ant-design/icons-vue'
 import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'Ant',
@@ -87,11 +88,16 @@ export default {
     NotificationOutlined
   },
   setup() {
-    const selectedKeys = ref(['1'])
+    const selectedKeys = ref(['/layouts/form'])
     const openKeys = ref(['sub1'])
+    const Router = useRouter()
+    const link = ({ key }) => {
+      Router.push({ path: key })
+    }
     return {
       selectedKeys,
-      openKeys
+      openKeys,
+      link
     }
   }
 }

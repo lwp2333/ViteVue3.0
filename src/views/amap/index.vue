@@ -2,8 +2,8 @@
   <div id="amapBox"></div>
   <div class="action">
     <a-button type="primary" @click="getGUI"> 显示区块 </a-button>
-    <a-button @click="setGUI">绘制区块</a-button>
-    <a-button @click="overSetGUI">获取路径</a-button>
+    <a-button type="primary" @click="setGUI">绘制区块</a-button>
+    <a-button type="primary" @click="overSetGUI">获取路径</a-button>
   </div>
 </template>
 
@@ -50,7 +50,12 @@ export default {
     }
     const overSetGUI = () => {
       const lngLatList = polygon.getPath()
-      console.log(lngLatList)
+      const path = lngLatList.map(item => {
+        const { lng, lat } = item
+        return [lng, lat]
+      })
+      console.log(path)
+      polyEditor.close()
     }
     return {
       map,
@@ -67,5 +72,12 @@ export default {
 #amapBox {
   width: 100%;
   height: 84%;
+}
+.action {
+  width: 100%;
+  height: 14%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 </style>
