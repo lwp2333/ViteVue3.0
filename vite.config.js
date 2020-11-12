@@ -25,7 +25,7 @@ export default {
    * 引入第三方
    */
   optimizeDeps: {
-    include: []
+    include: ['ant-design-vue/es/locale/zh_CN']
   },
 
   /**

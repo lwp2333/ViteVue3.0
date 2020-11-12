@@ -1,11 +1,11 @@
-import request from './request'
+import request from '../request'
 
 /** 获取人员列表*/
 export function getUserList(params) {
   return request({
     url: '/api/getUserList',
     method: 'get',
-    params
+    params,
   })
 }
 

@@ -5,9 +5,9 @@
     </a-form-item>
     <a-form-item label="活动地址" name="region">
       <a-select v-model:value="form.region" placeholder="请选择活动地址">
-        <a-select-option value="1"> 北京 </a-select-option>
-        <a-select-option value="2"> 上海 </a-select-option>
-        <a-select-option value="3"> 杭州 </a-select-option>
+        <a-select-option value="北京"> 北京 </a-select-option>
+        <a-select-option value="上海"> 上海 </a-select-option>
+        <a-select-option value="杭州"> 杭州 </a-select-option>
       </a-select>
     </a-form-item>
     <a-form-item label="活动时间" required name="date">
@@ -25,8 +25,8 @@
     </a-form-item>
     <a-form-item label="活动来源" name="resource">
       <a-radio-group v-model:value="form.resource">
-        <a-radio value="1"> 线上 </a-radio>
-        <a-radio value="2"> 线下 </a-radio>
+        <a-radio value="线上"> 线上 </a-radio>
+        <a-radio value="线下"> 线下 </a-radio>
       </a-radio-group>
     </a-form-item>
     <a-form-item label="活动描述" name="desc">
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted, toRefs } from 'vue'
+import { reactive, ref, onMounted, computed } from 'vue'
 import { NotEmpty, NotSelect, NotRadio, limitStr } from '../../utils/validate'
 import moment from 'moment'
 import 'moment/dist/locale/zh-cn'
@@ -61,6 +61,18 @@ export default {
     }
     onMounted(() => {
       // console.dir(ruleForm)
+    })
+    form.desc = computed({
+      get: () => {
+        if (form.name && form.region) return form.name + ' ' + form.region
+      },
+      set: value => {
+        if (value) {
+          const [name, region] = value.trim().split(' ')
+          form.name = name || ''
+          form.region = region || ''
+        }
+      }
     })
     const onSubmit = () => {
       ruleForm

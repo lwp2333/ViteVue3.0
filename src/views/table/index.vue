@@ -45,7 +45,7 @@
 
 <script>
 import { ref, reactive, watch, computed, toRefs, onMounted } from 'vue'
-import { SmileOutlined, DownOutlined, AndroidFilled, FormOutlined, DeleteOutlined } from '@ant-design/icons-vue'
+import { SmileOutlined, DownOutlined, AndroidFilled, FormOutlined, DeleteOutlined, EyeInvisibleFilled } from '@ant-design/icons-vue'
 import { getUserListByPage, delUser, createUser } from '/@/api/user'
 import { message } from 'ant-design-vue'
 
@@ -109,8 +109,13 @@ export default {
     }
     let list = reactive([])
     const initData = async () => {
-      const res = await getUserListByPage(params)
-      list.push(...res.list)
+      const res = await getUserListByPage(params).catch(err => {
+        console.log(err)
+      })
+      if (res) {
+        list.length = 0
+        list.push(...res.list)
+      }
     }
     onMounted(() => {
       initData()

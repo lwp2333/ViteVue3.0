@@ -1,5 +1,8 @@
 import axios from 'axios'
 import { message } from 'ant-design-vue'
+
+import router from '../router/index'
+
 message.config({
   top: `64px`,
   duration: 2,
@@ -9,12 +12,18 @@ message.config({
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
   withCredentials: false,
-  timeout: 6000
+  timeout: 10000
 })
-
+window.axiosCalcelTokenArr = []
 // 请求前拦截
 service.interceptors.request.use(
   config => {
+    /**
+     * 给每个请求一个token 标记，用于页面切换。取消上个未完成的接口请求
+     */
+    config.cancelToken = new axios.CancelToken(cancel => {
+      window.axiosCalcelTokenArr.push({ cancel })
+    })
     return config
   },
   error => {
@@ -41,7 +50,10 @@ const danger = res => {
   message.error(res.data.message)
   return Promise.reject(res.data.message)
 }
-
+const CancelApi = err => {
+  message.success(err.message)
+  // return Promise.reject(err.message)
+}
 // 响应拦截
 service.interceptors.response.use(
   res => {
@@ -65,7 +77,7 @@ service.interceptors.response.use(
     }
   },
   err => {
-    danger(err)
+    CancelApi(err)
   }
 )
 service.download = async (url, params) => {
@@ -89,5 +101,15 @@ service.download = async (url, params) => {
   link.click()
   window.URL.revokeObjectURL(blobUrl)
 }
+
+router.beforeEach((to, from, next) => {
+  window.axiosCalcelTokenArr.forEach((item, index) => {
+    if (item) {
+      item.cancel('上个页面未完成的接口请求已成功取消')
+      window.axiosCalcelTokenArr.splice(index, 1)
+    }
+  })
+  next()
+})
 
 export default service

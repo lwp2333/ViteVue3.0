@@ -32,6 +32,11 @@ export default [
         path: 'table',
         name: 'table',
         component: () => import('/@/views/table/index.vue')
+      },
+      {
+        path: 'hooks',
+        name: 'hooks',
+        component: () => import('/@/views/hooks/index.vue')
       }
     ]
   }

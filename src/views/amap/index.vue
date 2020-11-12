@@ -1,15 +1,15 @@
 <template>
   <div id="amapBox"></div>
   <div class="action">
-    <a-button type="primary" @click="getGUI"> 显示区块 </a-button>
+    <!-- <a-button type="primary" @click="getGUI"> 显示区块 </a-button> -->
     <a-button type="primary" @click="setGUI">绘制区块</a-button>
     <a-button type="primary" @click="overSetGUI">获取路径</a-button>
   </div>
 </template>
 
 <script>
-import { ref, reactive, watch, computed, toRefs, onMounted } from 'vue'
-import regionJson from '../../constant/region'
+import { ref, reactive, toRaw, watch, computed, toRefs, onMounted } from 'vue'
+import regionJson from '/@/constant/region'
 export default {
   name: 'Amap',
   setup() {
@@ -21,19 +21,16 @@ export default {
         viewMode: '3D'
       })
     }
-    onMounted(() => {
-      initAmap()
-    })
 
     // 绘制多边形， 且打开绘制功能
     const path = regionJson
 
     let polygon = new AMap.Polygon({
-      path: path,
+      path,
       strokeColor: '#FF33FF',
       strokeWeight: 6,
       strokeOpacity: 0.2,
-      fillOpacity: 0.4,
+      fillOpacity: 0.2,
       fillColor: '#1791fc',
       zIndex: 50,
       bubble: true
@@ -43,6 +40,11 @@ export default {
       // 缩放地图到合适的视野级别
       map.setFitView()
     }
+    onMounted(() => {
+      initAmap()
+      getGUI()
+    })
+
     let polyEditor = reactive({})
     const setGUI = () => {
       polyEditor = new AMap.PolygonEditor(map, polygon)
