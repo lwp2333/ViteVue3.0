@@ -1,7 +1,19 @@
 <template>
   <a-form :ref="setRef" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
-    <a-form-item ref="name" label="活动名称" name="name">
+    <a-form-item label="活动名称" name="name">
       <a-input v-model:value="form.name" />
+    </a-form-item>
+    <a-form-item label="活动代号" name="nickName">
+      <a-input v-model:value="form.nickName" />
+    </a-form-item>
+    <a-form-item label="活动电话" name="phone">
+      <a-input v-model:value="form.phone" />
+    </a-form-item>
+    <a-form-item label="举办人身份证" name="idcard">
+      <a-input v-model:value="form.idcard" />
+    </a-form-item>
+    <a-form-item label="活动邮箱" name="email">
+      <a-input v-model:value="form.email" />
     </a-form-item>
     <a-form-item label="活动地址" name="region">
       <a-select v-model:value="form.region" placeholder="请选择活动地址">
@@ -41,7 +53,7 @@
 
 <script>
 import { reactive, ref, onMounted, computed } from 'vue'
-import { NotEmpty, NotSelect, NotRadio, limitStr } from '../../utils/validate'
+import { NotEmpty, NotSelect, NotRadio, limitStr, nickStr, phoneStr, idCardStr, emailStr } from '/@/utils/validate'
 import moment from 'moment'
 import 'moment/dist/locale/zh-cn'
 export default {
@@ -49,6 +61,10 @@ export default {
     let ruleForm = ref(null)
     const form = reactive({
       name: null,
+      nickName: null,
+      phone: null,
+      idcard: null,
+      email: null,
       region: null,
       date: null,
       publish: null,
@@ -59,21 +75,21 @@ export default {
     const setRef = el => {
       ruleForm = el
     }
-    onMounted(() => {
-      // console.dir(ruleForm)
-    })
-    form.desc = computed({
-      get: () => {
-        if (form.name && form.region) return form.name + ' ' + form.region
-      },
-      set: value => {
-        if (value) {
-          const [name, region] = value.trim().split(' ')
-          form.name = name || ''
-          form.region = region || ''
-        }
-      }
-    })
+    // onMounted(() => {
+    //   console.dir(ruleForm)
+    // })
+    // form.desc = computed({
+    //   get: () => {
+    //     if (form.name && form.region) return form.name + ' ' + form.region
+    //   },
+    //   set: value => {
+    //     if (value) {
+    //       const [name, region] = value.trim().split(' ')
+    //       form.name = name || ''
+    //       form.region = region || ''
+    //     }
+    //   }
+    // })
     const onSubmit = () => {
       ruleForm
         .validate()
@@ -99,7 +115,11 @@ export default {
       ruleForm,
       form,
       rules: {
-        name: [NotEmpty('活动名称'), limitStr(3, 5, '活动名称')],
+        name: [limitStr('活动名称')],
+        nickName: [nickStr('活动代号')],
+        phone: [phoneStr],
+        idcard: [idCardStr],
+        email: [emailStr],
         region: [NotRadio('活动地址')],
         date: [NotRadio('活动时间')],
         type: [NotSelect('活动类型')],

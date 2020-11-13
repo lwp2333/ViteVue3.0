@@ -31,41 +31,31 @@
     </a-layout-header>
     <a-layout>
       <a-layout-sider width="160" collapsedWidth="0" breakpoint="lg">
-        <a-menu theme="dark" mode="inline" v-model:selectedKeys="selectedKeys" v-model:openKeys="openKeys" @click="link($event)">
-          <a-sub-menu key="sub1">
-            <template #title>
-              <span><user-outlined />用户中心</span>
-            </template>
-            <a-menu-item key="/layouts/form">表单</a-menu-item>
-            <a-menu-item key="/layouts/amap">地图</a-menu-item>
-            <a-menu-item key="/layouts/table">表格</a-menu-item>
-            <a-menu-item key="4">option4</a-menu-item>
-          </a-sub-menu>
-          <a-sub-menu key="sub2">
-            <template #title>
-              <span><laptop-outlined />权限中心</span>
-            </template>
-            <a-menu-item key="5">option5</a-menu-item>
-            <a-menu-item key="6">option6</a-menu-item>
-            <a-menu-item key="7">option7</a-menu-item>
-            <a-menu-item key="8">option8</a-menu-item>
-          </a-sub-menu>
-          <a-sub-menu key="sub3">
-            <template #title>
-              <span><notification-outlined />组件中心</span>
-            </template>
-            <a-menu-item key="9">option9</a-menu-item>
-            <a-menu-item key="10">option10</a-menu-item>
-            <a-menu-item key="11">option11</a-menu-item>
-            <a-menu-item key="12">option12</a-menu-item>
-          </a-sub-menu>
+        <a-menu
+          theme="dark"
+          mode="inline"
+          v-model:selectedKeys="selectedKeys"
+          v-model:openKeys="openKeys"
+          @openChange="openChange"
+          @click="link"
+        >
+          <template v-for="(item, index) in menuList" :key="index">
+            <a-sub-menu v-if="item.children" :key="item.path">
+              <template #title>
+                <span><user-outlined />{{ item.meta.title }}</span>
+              </template>
+              <a-menu-item v-for="subItem in item.children" :key="subItem.path">{{ subItem.meta.title }}</a-menu-item>
+            </a-sub-menu>
+            <a-menu-item v-else :key="item.path">{{ item.meta.title }}</a-menu-item>
+          </template>
         </a-menu>
       </a-layout-sider>
       <a-layout>
         <a-breadcrumb class="breadcrumb">
-          <a-breadcrumb-item>Home</a-breadcrumb-item>
-          <a-breadcrumb-item>List</a-breadcrumb-item>
-          <a-breadcrumb-item>App</a-breadcrumb-item>
+          <a-breadcrumb-item v-for="(item, index) in matchRoute" :key="index">
+            <router-link v-if="!item.meta.title" :to="item.path"> <home-outlined /> 仪表盘 </router-link>
+            <router-link v-else :to="item.path"> {{ item.meta.title }} </router-link>
+          </a-breadcrumb-item>
         </a-breadcrumb>
         <a-layout-content class="content">
           <router-view></router-view>
@@ -76,28 +66,75 @@
   </a-layout>
 </template>
 <script>
-import { UserOutlined, LaptopOutlined, NotificationOutlined } from '@ant-design/icons-vue'
-import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
-
+import { UserOutlined, LaptopOutlined, NotificationOutlined, HomeOutlined } from '@ant-design/icons-vue'
+import { reactive, ref, watchEffect } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import menu from '../router/layouts'
 export default {
   name: 'Ant',
   components: {
     UserOutlined,
     LaptopOutlined,
-    NotificationOutlined
+    NotificationOutlined,
+    HomeOutlined
   },
   setup() {
-    const selectedKeys = ref(['/layouts/form'])
-    const openKeys = ref(['sub1'])
+    const { children: constantMenu } = menu
+    const menuList = reactive(constantMenu)
+    const openKeys = reactive([])
+    const selectedKeys = reactive([])
     const Router = useRouter()
-    const link = ({ key }) => {
-      Router.push({ path: key })
+    const currRoute = useRoute()
+    const matchRoute = reactive([])
+    watchEffect(() => {
+      /**
+       * create 根据当前路由url，绑定 选中当前菜单
+       */
+      const { fullPath: currPath } = currRoute
+      if (currPath.includes('dashBoard')) {
+        selectedKeys.length = 0
+        selectedKeys.push(currPath)
+      } else {
+        const arr = currPath.split('/')
+        const path = arr[arr.length - 1]
+        const openPath = currPath.replace(`/${path}`, '')
+        openKeys.length = 0
+        openKeys.push(openPath)
+        selectedKeys.length = 0
+        selectedKeys.push(path)
+      }
+      /**
+       * 面包屑导航 逻辑
+       */
+      const { matched } = currRoute
+      /**
+       * 过滤掉  /layouts/dashBoard
+       */
+      const breadcrumb = matched.filter(item => {
+        return item.path !== '/layouts/dashBoard'
+      })
+      matchRoute.length = 0
+      matchRoute.push(...breadcrumb)
+    })
+
+    const openChange = e => {
+      openKeys.length = []
+      openKeys.push(...e)
+    }
+    const link = e => {
+      const { key, keyPath } = e
+      selectedKeys.length = 0
+      selectedKeys.push(key)
+      const path = keyPath.reverse().join('/')
+      Router.push(path)
     }
     return {
+      menuList,
       selectedKeys,
       openKeys,
-      link
+      openChange,
+      link,
+      matchRoute
     }
   }
 }
@@ -151,5 +188,8 @@ export default {
   background-color: #ffffff;
   padding: 24px;
   margin: 0;
+}
+.ant-menu-inline .ant-menu-item {
+  margin-top: 0;
 }
 </style>

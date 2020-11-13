@@ -21,17 +21,17 @@
 
 <script>
 import { ref, reactive, watch, computed, toRefs } from 'vue'
-import useMouse from '../../hooks/useMouse'
-import useInterval from '../../hooks/useInterval'
+import useMouse from '/@/hooks/useMouse'
+import useInterval from '/@/hooks/useInterval'
 export default {
   name: 'hooks',
 
   setup() {
     const count = ref(0)
-    const helloWord = () => {
+    const countAdd = () => {
       count.value++
     }
-    const [timer, setTime, restTime, clear] = useInterval(helloWord, 1000, false)
+    const [timer, setTime, restTime, clear, startInterval] = useInterval(countAdd, 1000, false)
     const { x, y } = useMouse()
 
     return {

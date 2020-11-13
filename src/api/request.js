@@ -50,10 +50,7 @@ const danger = res => {
   message.error(res.data.message)
   return Promise.reject(res.data.message)
 }
-const CancelApi = err => {
-  message.success(err.message)
-  // return Promise.reject(err.message)
-}
+
 // 响应拦截
 service.interceptors.response.use(
   res => {
@@ -77,7 +74,8 @@ service.interceptors.response.use(
     }
   },
   err => {
-    CancelApi(err)
+    message.error(err.message)
+    return Promise.reject(err.message)
   }
 )
 service.download = async (url, params) => {
