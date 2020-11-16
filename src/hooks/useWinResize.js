@@ -1,6 +1,6 @@
 import { onMounted, onBeforeUnmount } from 'vue'
 
-export default function useWinRize(Action = () => {}) {
+export default function useWinResize(Action = () => {}) {
   onMounted(() => {
     window.addEventListener('resize', Action, false)
   })

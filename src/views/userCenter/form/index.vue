@@ -117,9 +117,9 @@ export default {
       rules: {
         name: [limitStr('活动名称')],
         nickName: [nickStr('活动代号')],
-        phone: [phoneStr],
-        idcard: [idCardStr],
-        email: [emailStr],
+        phone: [phoneStr()],
+        idcard: [idCardStr()],
+        email: [emailStr()],
         region: [NotRadio('活动地址')],
         date: [NotRadio('活动时间')],
         type: [NotSelect('活动类型')],

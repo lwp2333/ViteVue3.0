@@ -28,6 +28,12 @@ export default {
       name: 'hooks',
       meta: { title: 'Hooks' },
       component: () => import('/@/views/userCenter/hooks/index.vue')
+    },
+    {
+      path: 'component',
+      name: 'component',
+      meta: { title: 'Component' },
+      component: () => import('/@/views/userCenter/component/index.vue')
     }
   ]
 }

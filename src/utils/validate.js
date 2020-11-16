@@ -81,7 +81,7 @@ export const nickStr = (str, min = 3, max = 8) => {
 export const phoneStr = () => {
   return {
     required: true,
-    pattern: /^（1[3-9])\d{9}/,
+    pattern: /^(1[3-9])\d{9}/,
     message: `请填写正确的手机号码`,
     trigger: 'blur',
     type: 'string'
@@ -94,7 +94,7 @@ export const phoneStr = () => {
 export const idCardStr = () => {
   return {
     required: true,
-    pattern: /^\d{15}|\d{18}/,
+    pattern: /(^\d{15}$)|(^\d{17}(\d|X|x)$)/,
     message: `请填写正确的身份证号码`,
     trigger: 'blur',
     type: 'string'

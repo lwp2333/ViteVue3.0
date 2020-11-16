@@ -7,7 +7,7 @@ import { ref, reactive, watch, computed, toRefs, onMounted, onBeforeUnmount } fr
 import { useStore, mapMutations } from 'vuex'
 import Echarts from 'echarts'
 import { option } from '/@/constant/echartsOption'
-import useWinRize from '/@/hooks/useWinRize'
+import useWinResize from '/@/hooks/useWinResize'
 import useInterval from '/@/hooks/useInterval'
 export default {
   name: 'Echarts',
@@ -37,7 +37,7 @@ export default {
     onMounted(() => {
       initEcharts()
     })
-    useWinRize(resizeEcharts)
+    useWinResize(resizeEcharts)
     return {}
   }
 }
