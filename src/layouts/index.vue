@@ -5,7 +5,7 @@
       <div class="right">
         <!-- 其他东西 -->
         <div class="avatar">
-          <a-avatar :size="42" src="../../static/img/avatar.png" />
+          <a-avatar :size="42" :src="logo" />
           <!-- <a-dropdown>
             <a-button type="link">
               <template #icon>
@@ -69,7 +69,9 @@
 import { UserOutlined, LaptopOutlined, NotificationOutlined, HomeOutlined } from '@ant-design/icons-vue'
 import { reactive, ref, watchEffect } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import menu from '../router/layouts'
+import menu from '../router/main'
+import logo from '/@/assets/img/avatar.jpg'
+import main from '../router/main'
 export default {
   name: 'Ant',
   components: {
@@ -91,27 +93,23 @@ export default {
        * create 根据当前路由url，绑定 选中当前菜单
        */
       const { fullPath: currPath } = currRoute
-      if (currPath.includes('dashBoard')) {
-        selectedKeys.length = 0
-        selectedKeys.push(currPath)
-      } else {
-        const arr = currPath.split('/')
-        const path = arr[arr.length - 1]
-        const openPath = currPath.replace(`/${path}`, '')
-        openKeys.length = 0
-        openKeys.push(openPath)
-        selectedKeys.length = 0
-        selectedKeys.push(path)
-      }
+      const arr = currPath.split('/')
+      const routeReverse = [...arr].reverse()
+      const path = routeReverse[0]
+      const openPath = routeReverse[1]
+      openKeys.length = 0
+      openKeys.push(openPath)
+      selectedKeys.length = 0
+      selectedKeys.push(path)
       /**
        * 面包屑导航 逻辑
        */
       const { matched } = currRoute
       /**
-       * 过滤掉  /layouts/dashBoard
+       * 过滤掉  app, /main/dashBoard
        */
       const breadcrumb = matched.filter(item => {
-        return item.path !== '/layouts/dashBoard'
+        return item.name !== 'dashBoard' && item.name !== 'app'
       })
       matchRoute.length = 0
       matchRoute.push(...breadcrumb)
@@ -126,7 +124,7 @@ export default {
       selectedKeys.length = 0
       selectedKeys.push(key)
       const path = keyPath.reverse().join('/')
-      Router.push(path)
+      Router.push(`/main/${path}`)
     }
     return {
       menuList,
@@ -134,7 +132,8 @@ export default {
       openKeys,
       openChange,
       link,
-      matchRoute
+      matchRoute,
+      logo
     }
   }
 }

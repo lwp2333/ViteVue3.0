@@ -8,8 +8,7 @@ for (let file of envFiles) {
     process.env[k] = envConfig[k]
   }
 }
-console.log(process.env.VUE_APP_BASE_API)
-
+console.log(process.env.VITE_APP_BASE_API)
 export default {
   hostname: process.env.VITE_HOST,
   port: process.env.VITE_PORT,
@@ -21,6 +20,7 @@ export default {
   ssr: false,
   base: process.env.VITE_BASE_URL,
   outDir: process.env.VITE_OUTPUT_DIR,
+  assetsDir: process.env.VITE_ASSETS_DIR,
   /**
    * 引入第三方
    */
@@ -32,10 +32,10 @@ export default {
    * 跨域代理
    */
   proxy: {
-    '/api': {
+    '/dev/api': {
       target: 'http://www.lwp.fun:7000',
       changeOtigin: true,
-      rewrite: path => path.replace('/api', '')
+      rewrite: path => path.replace(/\/dev\/api/, '')
     }
   },
 

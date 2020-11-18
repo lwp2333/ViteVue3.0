@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { ref, onMounted, reactive } from 'vue'
+import { ref, onMounted, reactive, defineComponent } from 'vue'
 import { barGradient2 } from '/@/constant/echartsOption'
 import Echarts from 'echarts'
 import useWinResize from '/@/hooks/useWinResize'
@@ -27,7 +27,7 @@ export default {
   },
   setup(props, contexts) {
     let myEcharts = reactive({})
-    const loading = ref(true  )
+    const loading = ref(true)
     const initEcharts = () => {
       const { xAxisData, yAxisData, color } = props
       myEcharts = Echarts.init(document.getElementById('echartId'))
@@ -56,7 +56,7 @@ export default {
 
 <style scoped lang="scss">
 #echartId {
-  width: 94%;
-  height: 720px;
+  width: 100%;
+  height: calc(100vh - 270px);
 }
 </style>

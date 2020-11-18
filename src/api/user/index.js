@@ -3,16 +3,16 @@ import request from '../request'
 /** 获取人员列表*/
 export function getUserList(params) {
   return request({
-    url: '/api/getUserList',
+    url: '/getUserList',
     method: 'get',
-    params,
+    params
   })
 }
 
 /** 获取人员分页列表*/
 export function getUserListByPage(params) {
   return request({
-    url: '/api/getUserListByPage',
+    url: '/getUserListByPage',
     method: 'get',
     params
   })
@@ -21,7 +21,7 @@ export function getUserListByPage(params) {
 /** 添加人员*/
 export function createUser(data) {
   return request({
-    url: '/api/createUser',
+    url: '/createUser',
     method: 'post',
     data
   })
@@ -30,7 +30,7 @@ export function createUser(data) {
 /** 删除人员*/
 export function delUser(params) {
   return request({
-    url: '/api/delUser',
+    url: '/delUser',
     method: 'delete',
     params
   })
@@ -39,7 +39,7 @@ export function delUser(params) {
 /** 修改人员*/
 export function updateUser(data) {
   return request({
-    url: '/api/updateUser',
+    url: '/updateUser',
     method: 'put',
     data
   })
@@ -48,7 +48,7 @@ export function updateUser(data) {
 /** 获取单个人员*/
 export function getUserDetail(params) {
   return request({
-    url: '/api/getUserDetail',
+    url: '/getUserDetail',
     method: 'get',
     params
   })
@@ -57,7 +57,7 @@ export function getUserDetail(params) {
 /** 上传头像 */
 export function upload(data) {
   return request({
-    url: '/api/upload',
+    url: '/upload',
     method: 'post',
     data
   })

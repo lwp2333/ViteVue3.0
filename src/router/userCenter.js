@@ -1,9 +1,9 @@
 export default {
   name: 'userCenter',
-  path: '/layouts/userCenter',
+  path: 'userCenter',
   component: () => import('/@/views/userCenter/index.vue'),
   meta: { title: '用户中心' },
-  redirect: '/layouts/userCenter/amap',
+  redirect: '/main/userCenter/amap',
   children: [
     {
       path: 'form',

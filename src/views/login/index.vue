@@ -1,17 +1,20 @@
 <template>
-  <div id="echartId"></div>
+  <div class="container">
+    <div id="echartId" @click="login"></div>
+  </div>
 </template>
 
 <script>
 import { ref, reactive, watch, computed, toRefs, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
 import { useStore, mapMutations } from 'vuex'
 import Echarts from 'echarts'
 import { option } from '/@/constant/echartsOption'
 import useWinResize from '/@/hooks/useWinResize'
 import useInterval from '/@/hooks/useInterval'
 export default {
-  name: 'Echarts',
-  setup(props) {
+  name: 'Login',
+  setup() {
     let myEcharts = reactive({})
     const doing = () => {
       let option = myEcharts.getOption()
@@ -20,7 +23,6 @@ export default {
     }
     const [timer, setTime, restTime, clear, startInterval] = useInterval(doing, 120, false)
     const initEcharts = () => {
-      const { text, data } = props
       myEcharts = Echarts.init(document.getElementById('echartId'))
       myEcharts.setOption(option)
 
@@ -38,14 +40,24 @@ export default {
       initEcharts()
     })
     useWinResize(resizeEcharts)
-    return {}
+    const Router = useRouter()
+    const login = () => {
+      Router.push({ path: '/main' })
+    }
+    return {
+      login
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-#echartId {
+.container {
   width: 100%;
   height: 100%;
+  #echartId {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>

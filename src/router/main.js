@@ -1,9 +1,9 @@
 import userCenter from './userCenter'
 import dashBoard from './dashBoard'
 export default {
-  path: '/layouts',
-  name: 'layouts',
+  path: 'main',
+  name: 'main',
   component: () => import('/@/layouts/index.vue'),
-  redirect: '/layouts/dashBoard',
+  redirect: '/main/dashBoard',
   children: [dashBoard, userCenter]
 }

@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "dev": " cross-env NODE_ENV=development vite",
-    "build-dev": " cross-env NODE_ENV=development vite build",
-    "build-prd": " cross-env NODE_ENV=production vite build"
+    "build-dev": " cross-env NODE_ENV=development vite build --mode=development",
+    "build-prd": " cross-env NODE_ENV=production vite build --mode=production"
   },
   "dependencies": {
     "@ant-design/icons-vue": "^5.1.5",

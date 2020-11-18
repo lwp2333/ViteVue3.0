@@ -1,31 +1,31 @@
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import { createRouter, createWebHashHistory } from 'vue-router'
-import constantRoutes from './layouts'
+import constantRoutes from './main.js'
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
     {
       path: '/',
-      name: '/',
+      name: 'app',
       component: () => import('/@/App.vue'),
       meta: {
         title: '首页'
       },
-      redirect: '/echarts',
+      redirect: '/login',
       children: [
         {
-          path: 'echarts',
-          name: 'echarts',
+          path: 'login',
+          name: 'login',
           meta: {
             title: '登录页'
           },
-          component: () => import('/@/views/echarts/index.vue')
-        }
+          component: () => import('/@/views/login/index.vue')
+        },
+        constantRoutes
       ]
-    },
-    constantRoutes
+    }
   ]
 })
 NProgress.configure({ showSpinner: false })

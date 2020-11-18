@@ -9,8 +9,12 @@ message.config({
   maxCount: 3
 })
 
+/**
+ * 加载环境变量
+ */
+const baseURL = import.meta.env.VITE_APP_BASE_API
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API,
+  baseURL,
   withCredentials: false,
   timeout: 10000
 })
