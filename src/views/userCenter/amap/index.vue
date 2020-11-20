@@ -10,6 +10,7 @@
 <script>
 import { ref, reactive, toRaw, watch, computed, toRefs, onMounted } from 'vue'
 import regionJson from '/@/constant/region'
+import useWinResize from '/@/hooks/useWinResize'
 export default {
   name: 'Amap',
   setup() {
@@ -44,7 +45,9 @@ export default {
       initAmap()
       getGUI()
     })
-
+    useWinResize(() => {
+      map.setFitView()
+    })
     let polyEditor = reactive({})
     const setGUI = () => {
       polyEditor = new AMap.PolygonEditor(map, polygon)
@@ -81,5 +84,11 @@ export default {
   display: flex;
   justify-content: space-around;
   align-items: center;
+}
+::v-deep .amap-logo {
+  display: none !important;
+}
+::v-deep .amap-copyright {
+  display: none !important;
 }
 </style>

@@ -140,6 +140,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~../../../style/mixins.scss';
 .layOut {
   width: 100%;
   height: 100%;
@@ -187,6 +188,7 @@ export default {
   background-color: #ffffff;
   padding: 24px;
   margin: 0;
+  @include scrollbar-Y;
 }
 .ant-menu-inline .ant-menu-item {
   margin-top: 0;

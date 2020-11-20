@@ -1,0 +1,27 @@
+@mixin scrollbar-Y {
+  overflow: auto;
+
+  // width: inherit;
+  &::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+    border-radius: 2px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: hsla(0, 0%, 53%, 0.1);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-image: -webkit-gradient(
+      linear,
+      left bottom,
+      left top,
+      color-stop(0.2, #59b7ea),
+      color-stop(0.7, #7ab7f1),
+      color-stop(1, #495fed)
+    );
+    cursor: pointer;
+  }
+}

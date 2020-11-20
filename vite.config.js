@@ -9,7 +9,7 @@ for (let file of envFiles) {
   }
 }
 console.log(process.env.VITE_APP_BASE_API)
-export default {
+module.exports = {
   hostname: process.env.VITE_HOST,
   port: process.env.VITE_PORT,
   // 是否自动在浏览器打开
