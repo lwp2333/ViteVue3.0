@@ -186,7 +186,7 @@ export default {
   min-height: calc(100vh - 178px);
   overflow: auto;
   background-color: #ffffff;
-  padding: 24px;
+  padding: 20px;
   margin: 0;
   @include scrollbar-Y;
 }

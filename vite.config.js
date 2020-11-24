@@ -13,7 +13,7 @@ module.exports = {
   hostname: process.env.VITE_HOST,
   port: process.env.VITE_PORT,
   // 是否自动在浏览器打开
-  open: false,
+  open: true,
   // 是否开启 https
   https: false,
   // 服务端渲染
@@ -25,7 +25,15 @@ module.exports = {
    * 引入第三方
    */
   optimizeDeps: {
-    include: ['ant-design-vue/es/locale/zh_CN']
+    include: [
+      '@ant-design/icons-vue',
+      'ant-design-vue',
+      'axios',
+      'echarts',
+      'echarts-liquidfill',
+      'nprogress',
+      'ant-design-vue/es/locale/zh_CN'
+    ]
   },
 
   /**

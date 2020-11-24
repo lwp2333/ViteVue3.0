@@ -63,10 +63,10 @@ service.interceptors.response.use(
         return successRes(res)
       case 201:
         return successChange(res)
-      case 203:
-        return successChange(res)
       case 202:
         return danger(res)
+      case 203:
+        return successChange(res)
       case 204:
         return danger(res)
       case 301:

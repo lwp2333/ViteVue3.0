@@ -1,6 +1,6 @@
 <template>
   <a-spin :spinning="loading">
-    <div id="echartId"></div>
+    <div :ref="setRef" class="bar_echart"></div>
   </a-spin>
 </template>
 
@@ -26,11 +26,15 @@ export default {
     }
   },
   setup(props, contexts) {
+    const echartId = ref(null)
+    const setRef = el => {
+      echartId.value = el
+    }
     let myEcharts = reactive({})
     const loading = ref(true)
     const initEcharts = () => {
       const { xAxisData, yAxisData, color } = props
-      myEcharts = Echarts.init(document.getElementById('echartId'))
+      myEcharts = Echarts.init(echartId.value)
       const option = barGradient2(xAxisData, yAxisData, color)
       myEcharts.setOption(option)
     }
@@ -41,12 +45,15 @@ export default {
     onMounted(async () => {
       loading.value = await new Promise((resolve, reject) => {
         setTimeout(() => {
+          initEcharts()
+
           resolve(false)
         }, 2200)
       })
-      initEcharts()
     })
     return {
+      echartId,
+      setRef,
       myEcharts,
       loading
     }
@@ -55,7 +62,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-#echartId {
+.bar_echart {
   width: 100%;
   height: calc(100vh - 270px);
 }

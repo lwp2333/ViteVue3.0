@@ -720,3 +720,59 @@ export const barGradient2 = (xAxisData = [], yAxisData = [], color) => {
     ]
   }
 }
+
+export const pieGradient = (data, colorList) => {
+  const color = colorList ? colorList : ['#58D5FF', '#73ACFF', '#FDD56A', '#FDB36A', '#FD866A', '#9E87FF']
+  const option = {
+    tooltip: {
+      trigger: 'item'
+    },
+    series: [
+      {
+        type: 'pie',
+        center: ['30%', '30%'],
+        radius: ['25%', '40%'],
+        minAngle: 10,
+        avoidLabelOverlap: true,
+        hoverOffset: 15,
+        itemStyle: {
+          color: params => {
+            return color[params.dataIndex]
+          }
+        },
+        label: {
+          show: true,
+          position: 'outer',
+          alignTo: 'labelLine',
+          // ·圆点
+          backgroundColor: 'auto', //圆点颜色，auto：映射的系列色
+          height: 0,
+          width: 0,
+          lineHeight: 0,
+          // height,width.lineHeight必须为0
+          distanceToLabelLine: 0, //圆点到labelline距离
+          borderRadius: 2.5,
+          padding: [2.5, -2.5, 2.5, -2.5],
+
+          /**
+           * radius和padding为圆点大小，圆点半径为几radius和padding各项数值就为几
+            如：圆点半径为1
+            borderRadius: 1,
+            padding: [1, -1, 1, -1]
+           */
+          formatter: '{a|{b}：}{b|{d}%}',
+          rich: {
+            a: {
+              padding: [0, 0, 0, 10]
+            },
+            b: {
+              padding: [0, 10, 0, 0]
+            }
+          }
+        },
+        data
+      }
+    ]
+  }
+  return option
+}
