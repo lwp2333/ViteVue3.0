@@ -1,6 +1,17 @@
 <template>
   <div class="container">
-    <a-table :columns="columns" :loading="tableLoading" :data-source="list" rowKey="_id">
+    <a-select v-model:value="params.sex" placeholder="请选择性别">
+      <a-select-option value="男"> 男 </a-select-option>
+      <a-select-option value="女"> 女 </a-select-option>
+    </a-select>
+    <a-table
+      :columns="columns"
+      :loading="tableLoading"
+      :data-source="list"
+      :pagination="tablePagination"
+      rowKey="_id"
+      @change="tablePaginationChange"
+    >
       <template #customTitle>
         <span><SmileOutlined /> 姓名</span>
       </template>
@@ -166,15 +177,19 @@ export default {
         slots: { customRender: 'action' }
       }
     ]
-    let params = {
+    // 将params 作为响应式数据，可以在useTableRequest 自动更新
+    const params = reactive({
       pageNum: 1,
-      pageSize: 5
-    }
-    const { list, pageNum, pageSize, totalPage, totalRecord, tableError, tableLoading, initTableData } = useTableRequest(
-      getUserListByPage,
-      params,
-      true
-    )
+      pageSize: 4,
+      sex: null
+    })
+    const {
+      list,
+      tablePagination,
+      tableError,
+      tableLoading,
+      Action: [refreshTableData, tablePaginationChange]
+    } = useTableRequest(getUserListByPage, params, true)
     const colorList = ['pink', 'orange', 'green', 'cyan', 'blue', 'purple']
     /**
      *  创建逻辑
@@ -243,20 +258,18 @@ export default {
     const DelRecord = async ({ _id }) => {
       await delUser({ _id })
       /** 重新刷新数据 */
-      initTableData(params)
+      await refreshTableData(params)
     }
 
     return {
       columns,
       list,
-      pageNum,
-      pageSize,
-      totalPage,
-      totalRecord,
+      tablePagination,
+      tablePaginationChange,
       tableError,
       tableLoading,
       colorList,
-
+      params,
       form,
       rules,
       setRef,
