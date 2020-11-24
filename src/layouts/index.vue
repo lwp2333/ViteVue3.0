@@ -60,7 +60,7 @@
         <a-layout-content class="content">
           <router-view></router-view>
         </a-layout-content>
-        <a-layout-footer :style="{ textAlign: 'center' }"> Ant Design ©2018 Created by Ant UED </a-layout-footer>
+        <a-layout-footer :style="{ textAlign: 'center', padding: '12px' }"> Ant Design ©2018 Created by Ant UED </a-layout-footer>
       </a-layout>
     </a-layout>
   </a-layout>

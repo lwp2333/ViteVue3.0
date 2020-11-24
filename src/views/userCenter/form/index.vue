@@ -58,7 +58,7 @@ import moment from 'moment'
 import 'moment/dist/locale/zh-cn'
 export default {
   setup() {
-    let ruleForm = ref(null)
+    const ruleForm = ref(null)
     const form = reactive({
       name: null,
       nickName: null,
@@ -73,7 +73,7 @@ export default {
       desc: null
     })
     const setRef = el => {
-      ruleForm = el
+      ruleForm.value = el
     }
     // onMounted(() => {
     //   console.dir(ruleForm)
@@ -91,7 +91,7 @@ export default {
     //   }
     // })
     const onSubmit = () => {
-      ruleForm
+      ruleForm.value
         .validate()
         .then(() => {
           console.log('values', form)
@@ -101,7 +101,7 @@ export default {
         })
     }
     const resetForm = () => {
-      ruleForm.resetFields()
+      ruleForm.value.resetFields()
     }
     return {
       labelCol: {
