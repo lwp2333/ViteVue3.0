@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <a-table :columns="columns" :data-source="list">
+    <a-table :columns="columns" :loading="tableLoading" :data-source="list" rowKey="_id">
       <template #customTitle>
         <span><SmileOutlined /> 姓名</span>
       </template>
@@ -10,12 +10,12 @@
       <template #customAvatar>
         <span><AndroidFilled /> 头像</span>
       </template>
-      <template #avatar="{ text }">
-        <a-avatar :size="48" :src="text.url"></a-avatar>
+      <template #avatar="{ text: avatar }">
+        <a-avatar :size="48" :src="avatar"></a-avatar>
       </template>
       <template #tags="{ text: tags }">
         <span>
-          <a-tag v-for="tag in tags" :key="tag" color="green">
+          <a-tag v-for="(tag, index) in tags" :key="tag" :color="colorList[index % 6]">
             {{ tag }}
           </a-tag>
         </span>
@@ -40,22 +40,85 @@
       <template #icon><FormOutlined /> </template>
       创建
     </a-button>
+    <a-modal v-model:visible="visible" ok-text="确认" cancel-text="取消" @ok="handleSubmit">
+      <template #footer>
+        <a-button key="back" @click="handleCancel"> 取消 </a-button>
+        <a-button key="submit" type="primary" :loading="submitLoading" @click="handleSubmit"> 确定 </a-button>
+      </template>
+      <a-form
+        :ref="setRef"
+        :model="form"
+        :rules="rules"
+        :label-col="{
+          xl: 4,
+          sm: 8
+        }"
+        :wrapper-col="{
+          xl: 10,
+          sm: 16
+        }"
+      >
+        <a-form-item label="昵称" name="avatar">
+          <a-upload
+            :fileList="fileList"
+            name="files"
+            list-type="picture-card"
+            class="avatar-uploader"
+            :show-upload-list="false"
+            action="/dev/api/uploadFile"
+            :before-upload="beforeUpload"
+            @change="handleChange"
+          >
+            <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
+            <div v-else>
+              <!-- todo -->
+              <loading-outlined v-if="avatarLoading" />
+              <plus-outlined v-else />
+              <div class="ant-upload-text">上传头像</div>
+            </div>
+          </a-upload>
+        </a-form-item>
+        <a-form-item label="昵称" name="name">
+          <a-input v-model:value="form.name" />
+        </a-form-item>
+        <a-form-item label="年龄" name="age">
+          <a-textarea v-model:value="form.age" />
+        </a-form-item>
+        <a-form-item label="性别" name="sex">
+          <a-radio-group v-model:value="form.sex" button-style="solid">
+            <a-radio-button value="男"> 男 </a-radio-button>
+            <a-radio-button value="女"> 女 </a-radio-button>
+          </a-radio-group>
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
 <script>
 import { ref, reactive, watch, computed, toRefs, onMounted } from 'vue'
-import { SmileOutlined, DownOutlined, AndroidFilled, FormOutlined, DeleteOutlined, EyeInvisibleFilled } from '@ant-design/icons-vue'
+import {
+  SmileOutlined,
+  DownOutlined,
+  AndroidFilled,
+  FormOutlined,
+  DeleteOutlined,
+  EyeInvisibleFilled,
+  LoadingOutlined,
+  PlusOutlined
+} from '@ant-design/icons-vue'
 import { getUserListByPage, delUser, createUser } from '/@/api/user'
 import { message } from 'ant-design-vue'
-
+import useTableRequest from '/@/hooks/useTableRequest'
 export default {
   name: 'Table',
   components: {
     SmileOutlined,
     AndroidFilled,
     FormOutlined,
-    DeleteOutlined
+    DeleteOutlined,
+    LoadingOutlined,
+    PlusOutlined
   },
   setup() {
     const columns = [
@@ -107,33 +170,108 @@ export default {
       pageNum: 1,
       pageSize: 5
     }
-    let list = reactive([])
-    const initData = async () => {
-      const res = await getUserListByPage(params).catch(err => {
-        console.log(err)
-      })
-      if (res) {
-        list.length = 0
-        list.push(...res.list)
+    const { list, pageNum, pageSize, totalPage, totalRecord, tableError, tableLoading, initTableData } = useTableRequest(
+      getUserListByPage,
+      params,
+      true
+    )
+    const colorList = ['pink', 'orange', 'green', 'cyan', 'blue', 'purple']
+    /**
+     *  创建逻辑
+     */
+    const form = reactive({
+      avatar: [],
+      name: '',
+      age: '',
+      description: '',
+      sex: ''
+    })
+    const ruleForm = ref(null)
+    const rules = []
+    const setRef = el => {
+      ruleForm.value = el
+    }
+    const submitLoading = ref(false)
+    const visible = ref(false)
+    const createRecord = () => {
+      visible.value = true
+    }
+    /**头像上传逻辑 */
+    const fileList = reactive([])
+    const imageUrl = ref(null)
+    const avatarLoading = ref(false)
+    const beforeUpload = file => {
+      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
+      if (!isJpgOrPng) {
+        message.error('请选择上传png/jpg的格式图片')
+      }
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isLt2M) {
+        message.error('请选择上传大小不超过2mb的图片')
+      }
+      return isJpgOrPng && isLt2M
+    }
+    const handleChange = ({ file, fileList: list }) => {
+      fileList.length = 0
+      fileList.push(...list)
+      console.log(list)
+      console.log(fileList)
+      if (file.status === 'uploading') {
+        avatarLoading.value = true
+        return
+      }
+      if (file.status === 'done') {
+        console.log(info)
+      }
+      if (file.status === 'error') {
+        avatarLoading.value = false
       }
     }
-    onMounted(() => {
-      initData()
-    })
-    const createRecord = params => {
-      createUser(params)
+    const handleCancel = () => {
+      visible.value = false
     }
+    const handleSubmit = () => {}
+    /**
+     * 编辑逻辑
+     */
     const EditRecord = ({ _id }) => {
       console.log(_id)
     }
+    /**
+     * 删除逻辑
+     */
     const DelRecord = async ({ _id }) => {
       await delUser({ _id })
-      // initData()
+      /** 重新刷新数据 */
+      initTableData(params)
     }
+
     return {
       columns,
       list,
+      pageNum,
+      pageSize,
+      totalPage,
+      totalRecord,
+      tableError,
+      tableLoading,
+      colorList,
+
+      form,
+      rules,
+      setRef,
+      visible,
+
       createRecord,
+      fileList,
+      imageUrl,
+      avatarLoading,
+      beforeUpload,
+      handleChange,
+      submitLoading,
+      handleCancel,
+      handleSubmit,
+
       EditRecord,
       DelRecord
     }

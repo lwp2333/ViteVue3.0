@@ -25,7 +25,15 @@ module.exports = {
    * 引入第三方
    */
   optimizeDeps: {
-    include: ['ant-design-vue/es/locale/zh_CN']
+    include: [
+      '@ant-design/icons-vue',
+      'ant-design-vue',
+      'axios',
+      'echarts',
+      'echarts-liquidfill',
+      'nprogress',
+      'ant-design-vue/es/locale/zh_CN'
+    ]
   },
 
   /**

@@ -8,10 +8,6 @@
     border-radius: 2px;
   }
 
-  &::-webkit-scrollbar-track {
-    background: hsla(0, 0%, 53%, 0.1);
-  }
-
   &::-webkit-scrollbar-thumb {
     border-radius: 4px;
     background-image: -webkit-gradient(
