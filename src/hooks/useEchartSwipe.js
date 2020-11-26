@@ -97,7 +97,7 @@ export default function useEchartSwipe(dom = null, dataOption = null, interval =
       }
       // 改变当前项为 悬浮项
       currentItem.name = e.name
-      currentItem.value = e.name
+      currentItem.value = e.value
       // 直接清除定时器
       clearInterval(timer)
     })

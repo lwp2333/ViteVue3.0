@@ -43,8 +43,11 @@ export default {
     onMounted(() => {
       init()
     })
+    const clickEvent = e => {
+      console.log(e)
+    }
     const dataOption = pieGradient(data, colorList)
-    const current = useEchartSwipe(echartRef, dataOption)
+    const current = useEchartSwipe(echartRef, dataOption, 1800, clickEvent)
     return {
       setRef,
       loading,
