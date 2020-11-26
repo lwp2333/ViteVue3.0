@@ -1,13 +1,16 @@
 <template>
   <a-spin :spinning="loading">
     <div :ref="setRef" class="pie_echart"></div>
+    <div class="markInfo">
+      <div class="label">{{ current.name }}</div>
+      <div class="value">{{ current.value }}</div>
+    </div>
   </a-spin>
 </template>
 
 <script>
 import { ref, onMounted, reactive, defineComponent } from 'vue'
 import { pieGradient } from '/@/constant/echartsOption'
-import Echarts from 'echarts'
 import useWinResize from '/@/hooks/useWinResize'
 import useEchartSwipe from '/@/hooks/useEchartSwipe'
 import { createLogger } from 'vuex'
@@ -24,41 +27,28 @@ export default {
     }
   },
   setup(props, contexts) {
-    const echartId = ref(null)
+    const echartRef = ref(null)
     const setRef = el => {
-      echartId.value = el
+      echartRef.value = el
     }
-    let myEcharts = null
     const loading = ref(true)
-    const initEcharts = async () => {
-      console.log(1)
+    const { data, colorList } = props
+    const init = async () => {
       loading.value = await new Promise((resolve, reject) => {
         setTimeout(() => {
-          const { data, colorList } = props
-          myEcharts = Echarts.init(echartId.value)
-          const option = pieGradient(data, colorList)
-          myEcharts.setOption(option)
-          console.log(2)
           resolve(false)
-          console.log(5)
-        }, 2200)
+        }, 220)
       })
     }
-    const resizeEcharts = () => {
-      myEcharts && myEcharts.resize()
-    }
-    onMounted(async () => {
-      await initEcharts()
-    })
     onMounted(() => {
-      console.log(3)
+      init()
     })
-    useWinResize(resizeEcharts)
-    useEchartSwipe(myEcharts)
+    const dataOption = pieGradient(data, colorList)
+    const current = useEchartSwipe(echartRef, dataOption)
     return {
       setRef,
-      echartId,
-      loading
+      loading,
+      current
     }
   }
 }
@@ -68,5 +58,20 @@ export default {
 .pie_echart {
   width: 100%;
   height: calc(100vh - 270px);
+}
+.markInfo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  .label {
+    font-size: 28px;
+    color: black;
+  }
+  .value {
+    font-size: 24px;
+    color: aqua;
+  }
 }
 </style>

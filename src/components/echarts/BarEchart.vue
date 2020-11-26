@@ -26,33 +26,31 @@ export default {
     }
   },
   setup(props, contexts) {
-    const echartId = ref(null)
+    const echartRef = ref(null)
     const setRef = el => {
-      echartId.value = el
+      echartRef.value = el
     }
-    let myEcharts = reactive({})
+    let myEcharts = null
     const loading = ref(true)
-    const initEcharts = () => {
+    const initEcharts = async () => {
+      loading.value = await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve(false)
+        }, 220)
+      })
       const { xAxisData, yAxisData, color } = props
-      myEcharts = Echarts.init(echartId.value)
+      myEcharts = Echarts.init(echartRef.value)
       const option = barGradient2(xAxisData, yAxisData, color)
       myEcharts.setOption(option)
     }
     const resizeEcharts = () => {
-      myEcharts.resize()
+      myEcharts && myEcharts.resize()
     }
     useWinResize(resizeEcharts)
-    onMounted(async () => {
-      loading.value = await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          initEcharts()
-
-          resolve(false)
-        }, 2200)
-      })
+    onMounted(() => {
+      initEcharts()
     })
     return {
-      echartId,
       setRef,
       myEcharts,
       loading

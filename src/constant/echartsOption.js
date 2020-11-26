@@ -724,13 +724,16 @@ export const barGradient2 = (xAxisData = [], yAxisData = [], color) => {
 export const pieGradient = (data, colorList) => {
   const color = colorList ? colorList : ['#58D5FF', '#73ACFF', '#FDD56A', '#FDB36A', '#FD866A', '#9E87FF']
   const option = {
+    legend: {
+      show: true
+    },
     tooltip: {
       trigger: 'item'
     },
     series: [
       {
         type: 'pie',
-        center: ['30%', '30%'],
+        center: ['50%', '50%'],
         radius: ['25%', '40%'],
         minAngle: 10,
         avoidLabelOverlap: true,
@@ -740,6 +743,7 @@ export const pieGradient = (data, colorList) => {
             return color[params.dataIndex]
           }
         },
+        legendHoverLink: false, // 鼠标悬浮legend 高亮图表
         label: {
           show: true,
           position: 'outer',
