@@ -1,15 +1,28 @@
 <template>
   <div class="container">
-    <a-select v-model:value="params.sex" placeholder="请选择性别">
-      <a-select-option value="男"> 男 </a-select-option>
-      <a-select-option value="女"> 女 </a-select-option>
-    </a-select>
+    <div class="topAction">
+      <a-row type="flex" justify="space-between" align="middle">
+        <a-col>
+          <a-select v-model:value="params.sex" allowClear size="small" placeholder="请选择性别">
+            <a-select-option value="男"> 男 </a-select-option>
+            <a-select-option value="女"> 女 </a-select-option>
+          </a-select>
+        </a-col>
+        <a-col>
+          <a-button type="link" size="small" @click="createRecord">
+            <template #icon><FormOutlined /> </template>
+            创建
+          </a-button>
+        </a-col>
+      </a-row>
+    </div>
     <a-table
       :columns="columns"
       :loading="tableLoading"
       :data-source="list"
       :pagination="tablePagination"
       rowKey="_id"
+      size="small"
       @change="tablePaginationChange"
     >
       <template #customTitle>
@@ -47,10 +60,6 @@
       </template>
     </a-table>
 
-    <a-button type="link" size="small" @click="createRecord">
-      <template #icon><FormOutlined /> </template>
-      创建
-    </a-button>
     <a-modal v-model:visible="visible" ok-text="确认" cancel-text="取消" @ok="handleSubmit">
       <template #footer>
         <a-button key="back" @click="handleCancel"> 取消 </a-button>
@@ -80,7 +89,7 @@
             :before-upload="beforeUpload"
             @change="handleChange"
           >
-            <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
+            <img v-if="imageUrl" class="avatar" :src="imageUrl" alt="avatar" />
             <div v-else>
               <!-- todo -->
               <loading-outlined v-if="avatarLoading" />
@@ -212,7 +221,9 @@ export default {
       visible.value = true
     }
     /**头像上传逻辑 */
-    const fileList = reactive([])
+    const uploadFileModel = reactive({
+      fileList: []
+    })
     const imageUrl = ref(null)
     const avatarLoading = ref(false)
     const beforeUpload = file => {
@@ -226,19 +237,18 @@ export default {
       }
       return isJpgOrPng && isLt2M
     }
-    const handleChange = ({ file, fileList: list }) => {
-      fileList.length = 0
-      fileList.push(...list)
-      console.log(list)
-      console.log(fileList)
-      if (file.status === 'uploading') {
+    const handleChange = info => {
+      uploadFileModel.fileList = [...info.fileList]
+      if (info.file.status === 'uploading') {
         avatarLoading.value = true
         return
       }
-      if (file.status === 'done') {
-        console.log(info)
+      if (info.file.status === 'done') {
+        avatarLoading.value = false
+        const { ossUrl } = info.file.response.data
+        imageUrl.value = ossUrl
       }
-      if (file.status === 'error') {
+      if (info.file.status === 'error') {
         avatarLoading.value = false
       }
     }
@@ -276,7 +286,7 @@ export default {
       visible,
 
       createRecord,
-      fileList,
+      ...toRefs(uploadFileModel),
       imageUrl,
       avatarLoading,
       beforeUpload,
@@ -296,8 +306,16 @@ export default {
 .container {
   width: 100%;
   height: 100%;
+  .topAction {
+    margin-bottom: 20px;
+  }
 }
 .delColor {
   color: red;
+}
+.avatar {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
 }
 </style>
