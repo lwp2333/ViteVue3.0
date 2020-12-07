@@ -76,5 +76,15 @@ export default {
     font-size: 24px;
     color: aqua;
   }
+  @media screen and (max-width: 414px) {
+    .label {
+      font-size: 16px;
+      color: black;
+    }
+    .value {
+      font-size: 14px;
+      color: aqua;
+    }
+  }
 }
 </style>

@@ -1,11 +1,12 @@
 <template>
   <a-config-provider :locale="zhCN">
     <!-- vue3.0配置 -->
-    <router-view v-slot="{ Component }">
+    <!-- <router-view v-slot="{ Component }">
       <keep-alive>
         <component :is="Component" />
       </keep-alive>
-    </router-view>
+    </router-view> -->
+    <router-view></router-view>
   </a-config-provider>
 </template>
 
