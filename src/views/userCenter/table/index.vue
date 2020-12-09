@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <a-select v-model:value="params.sex" placeholder="请选择性别">
+    <a-select v-model:value="params.sex" allowClear placeholder="请选择性别">
       <a-select-option value="男"> 男 </a-select-option>
       <a-select-option value="女"> 女 </a-select-option>
     </a-select>
