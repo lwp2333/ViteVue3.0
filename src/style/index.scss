@@ -6,7 +6,7 @@
   height: 100%;
 }
 .markerHoverModal {
-  background-color: #0b6ad9;
+  background: linear-gradient(90deg, rgba(0, 49, 154, 0) -9%, #732aff 10%, #2a67ff 39%, rgba(0, 49, 154, 0));
   border-radius: 2px;
   color: #fff;
   padding: 14px 20px;
@@ -14,14 +14,14 @@
   cursor: pointer;
   .marker_box_title {
     color: #fff;
-    font-size: 22px;
+    font-size: 18px;
     white-space: nowrap;
   }
   :not(:last-child) {
     margin-bottom: 12px;
   }
   div {
-    font-size: 18px;
+    font-size: 16px;
     line-height: 20px;
     color: #aacaff;
     span {

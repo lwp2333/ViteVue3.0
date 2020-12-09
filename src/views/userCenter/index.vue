@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: 'Container',
+  name: 'UserCenterContainer',
   setup() {
     return {}
   }
