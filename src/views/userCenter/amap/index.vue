@@ -50,7 +50,7 @@ export default {
     }
     onMounted(() => {
       initAmap()
-      // getGUI()
+      getGUI()
     })
     useWinResize(() => {
       map.setFitView()
@@ -97,13 +97,13 @@ export default {
         const markerItem = new AMap.CircleMarker({
           extData: item,
           center: [item.lng, item.lat],
-          radius: 10, //3D视图下，CircleMarker半径不要超过64px
+          radius: 6, //3D视图下，CircleMarker半径不要超过64px
           strokeColor: 'rgba(255,198,76,1)',
           strokeWeight: 1,
           strokeOpacity: 1,
           fillColor: 'rgba(255,198,76,0.8)',
           fillOpacity: 0.72,
-          zIndex: 10,
+          zIndex: 6,
           bubble: true,
           cursor: 'pointer',
           clickable: true
@@ -115,7 +115,7 @@ export default {
             currentHighMarker.target.setOptions({
               strokeColor: 'rgba(255,198,76,1)',
               fillColor: 'rgba(255,198,76,0.8)',
-              radius: 10,
+              radius: 6,
               fillOpacity: 0.72
             })
           infoModel && infoModel.close()
@@ -125,7 +125,7 @@ export default {
           currentHighMarker.target.setOptions({
             strokeColor: 'rgba(11,106,217, 1)',
             fillColor: 'rgba(11,106,217,1)',
-            radius: 14,
+            radius: 8,
             fillOpacity: 1
           })
 
@@ -148,7 +148,7 @@ export default {
             currentHighMarker.target.setOptions({
               strokeColor: 'rgba(255,198,76,1)',
               fillColor: 'rgba(255,198,76,0.8)',
-              radius: 10,
+              radius: 6,
               fillOpacity: 0.72
             })
           infoModel && infoModel.close()
@@ -175,7 +175,7 @@ export default {
 }
 .action {
   width: 100%;
-  height: 14%;
+  height: 12%;
   display: flex;
   justify-content: space-around;
   align-items: center;

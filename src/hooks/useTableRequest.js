@@ -21,7 +21,8 @@ export default function (Api = () => {}, params = null, needLoading = false) {
     hideOnSinglePage: false,
     showSizeChanger: true,
     showQuickJumper: true,
-    showTotal: (total, range) => `显示 ${range[0]}~${range[1]} 条记录，共 ${total} 条记录`
+    size: 'small',
+    showTotal: (total, range) => `共 ${total} 条记录，当前为第 ${range[0]}~${range[1]} 条记录`
   })
   /**
    *

@@ -23,8 +23,20 @@ const router = createRouter({
           },
           component: () => import('/@/views/login/index.vue')
         },
-        constantRoutes
+        constantRoutes,
+        {
+          path: '404',
+          name: 'notFound',
+          component: () => import('/@/views/404/index.vue'),
+          meta: {
+            title: 'notFound'
+          }
+        }
       ]
+    },
+    {
+      path: '/:catchAll(.*)',
+      redirect: '/404'
     }
   ]
 })
