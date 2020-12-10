@@ -5,11 +5,17 @@
     <a-tag color="orange" closable @close="log"> 表格</a-tag>
     <a-tag color="green" closable @close="log"> Hooks </a-tag>
     <a-tag color="cyan" closable @close="log"> Echarts </a-tag>
-    <div class="mockPic">
-      <a-spin :spinning="loading">
-        <img :src="mockPic" @click="getpic" />
-      </a-spin>
-    </div>
+    <a-row :gutter="[16, 16]">
+      <a-col :xl="12" :sm="24">
+        <a-spin :spinning="loading">
+          <div id="he-plugin-standard"></div>
+        </a-spin>
+      </a-col>
+      <a-col :xl="12" :sm="24">
+        <img :ref="setRef" id="pic" :src="mockPic" @click="getpic" alt="mock" />
+      </a-col>
+    </a-row>
+
     <div class="flexChange">
       <a-radio-group size="small" v-model:value="currFlexClass" button-style="solid">
         <a-radio-button value="a"> flex-around </a-radio-button>
@@ -35,15 +41,17 @@
         </a-col>
       </a-row>
     </div>
+    <div class="info">{{ width }}, {{ height }}</div>
   </div>
 </template>
 
 <script>
-import { ref, reactive, watch, computed, toRefs } from 'vue'
+import { ref, reactive, watch, onMounted, computed, toRefs } from 'vue'
 import { useRoute } from 'vue-router'
 import iconList from '/@/constant/iconList.js'
 import lwpIcon from '../../../components/global/lwpIcon.vue'
 import { getMockPic } from '/@/api/mock'
+import useSize from '/@/hooks/useSize'
 export default {
   name: 'TagView',
   components: {
@@ -79,6 +87,11 @@ export default {
     ]
     const mockPic = ref(null)
     const loading = ref(false)
+    const picRef = ref(null)
+    const setRef = el => {
+      picRef.value = el
+    }
+    const { width, height } = useSize('pic')
     const getpic = async () => {
       loading.value = true
       const res = await getMockPic().catch(() => {
@@ -89,7 +102,27 @@ export default {
         mockPic.value = res.url
       }
     }
-    getpic()
+    const getWeather = () => {
+      window.WIDGET = {
+        CONFIG: {
+          layout: 1,
+          width: 450,
+          height: 150,
+          background: 1,
+          dataColor: 'FFFFFF',
+          borderRadius: 5,
+          key: '82691ba7262e428c90bdd6553acc3363'
+        }
+      }
+      let script = document.createElement('script')
+      script.type = 'text/javascript'
+      script.src = 'https://widget.qweather.net/standard/static/js/he-standard-common.js?v=2.0'
+      document.getElementsByTagName('head')[0].appendChild(script)
+    }
+    onMounted(() => {
+      getpic()
+      getWeather()
+    })
     return {
       log,
       currFlexClass,
@@ -97,7 +130,10 @@ export default {
       iconList,
       mockPic,
       getpic,
-      loading
+      loading,
+      setRef,
+      width,
+      height
     }
   }
 }
@@ -144,5 +180,15 @@ export default {
 }
 .ant-col {
   @include flex-col-center;
+}
+.mockPic {
+  @include flex-row-around;
+}
+:deep(.ant-spin-nested-loading) {
+  @include flex-col-center;
+}
+#pic {
+  width: 12vw;
+  height: 4vw;
 }
 </style>
