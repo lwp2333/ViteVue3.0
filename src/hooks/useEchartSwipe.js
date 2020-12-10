@@ -34,10 +34,14 @@ export default function useEchartSwipe(dom = null, dataOption = null, interval =
     myEchart = Echarts.init(dom.value)
     myEchart.setOption(dataOption)
   }
-
   /**
    *  auto swipe
    */
+  const autoSwipe = () => {
+    mainAction()
+    timer && clearInterval(timer)
+    timer = setInterval(mainAction, interval)
+  }
   const highLight = index => {
     myEchart.dispatchAction({
       type: 'highlight',
@@ -65,24 +69,17 @@ export default function useEchartSwipe(dom = null, dataOption = null, interval =
     }
     len = currDataList.length
     downplay(currentIndex % len)
-    let curData = null
-    if (len > 1) {
+    if (len > 0) {
       currentIndex = (currentIndex + 1) % len
-      highLight(currentIndex)
-      curData = currDataList[currentIndex]
-      currentItem.name = curData.name
-      currentItem.value = curData.value
-      len === 1 && clearInterval(timer)
+      len === 1 ? clearInterval(timer) : highLight(currentIndex)
+      currentItem.name = currDataList[currentIndex].name
+      currentItem.value = currDataList[currentIndex].value
     } else {
-      currentIndex = 0
-      clearInterval(timer)
+      currentIndex = -1 // 取消所有数据展示 ， 重置为-1
       currentItem.name = ''
       currentItem.value = ''
+      timer && clearInterval(timer)
     }
-  }
-  const autoSwipe = () => {
-    timer && clearInterval(timer)
-    timer = setInterval(mainAction, interval)
   }
   /**
    * 挂载监听 mouseover， mousemove 事件
@@ -98,18 +95,17 @@ export default function useEchartSwipe(dom = null, dataOption = null, interval =
       // 改变当前项为 悬浮项
       currentItem.name = e.name
       currentItem.value = e.value
+      // 下次轮播从当前高亮项开始downplay
+      currentIndex = e.dataIndex
       // 直接清除定时器
-      clearInterval(timer)
+      timer && clearInterval(timer)
     })
     myEchart.on('mouseout', () => {
-      clearInterval(timer)
       autoSwipe() // 鼠标离开，重新启动高亮
     })
     myEchart.on('legendselectchanged', e => {
       // 图表项，切换展示与否
       selectedLengend = e.selected
-      // 先清除 轮播
-      clearInterval(timer)
       // 重新开始轮播
       autoSwipe()
     })
@@ -117,21 +113,19 @@ export default function useEchartSwipe(dom = null, dataOption = null, interval =
       clickEvent(e) // 外部扩展事件
     })
   }
-
   const resizeEcharts = () => {
     myEchart && myEchart.resize()
   }
   useWinResize(resizeEcharts)
-  /**
-   * 获取当前current high item
-   */
+
   onMounted(() => {
     initPieEchart()
     initPieEvent()
     autoSwipe()
   })
+
   onUnmounted(() => {
-    clearInterval(timer)
+    timer && clearInterval(timer)
   })
   return currentItem
 }
