@@ -34,9 +34,10 @@
       </a-card>
     </div>
     <div class="iconList">
+      <a-slider :min="16" :max="64" :step="2" :marks="marks" v-model:value="iconSize" />
       <a-row :gutter="[16, 16]">
         <a-col :span="6" v-for="(item, index) in iconList" :key="index">
-          <lwp-icon :iconName="item.className" :size="48" @click="log(item.className)"></lwp-icon>
+          <lwp-icon :iconName="item.className" :size="iconSize" @click="log(item.className)"></lwp-icon>
           <span class="iconName">{{ item.name }}</span>
         </a-col>
       </a-row>
@@ -51,6 +52,8 @@ import { useRoute } from 'vue-router'
 import iconList from '/@/constant/iconList.js'
 import lwpIcon from '../../../components/global/lwpIcon.vue'
 import { getMockPic } from '/@/api/mock'
+import { login } from '/@/api/user'
+import { setAccessToken, setRefreshToken } from '/@/utils/auth'
 import useSize from '/@/hooks/useSize'
 export default {
   name: 'TagView',
@@ -119,7 +122,23 @@ export default {
       script.src = 'https://widget.qweather.net/standard/static/js/he-standard-common.js?v=2.0'
       document.getElementsByTagName('head')[0].appendChild(script)
     }
+    const submitLogin = async () => {
+      const data = {
+        userName: 'lwp2020',
+        password: 'jujingyi3344'
+      }
+      const res = await login(data).catch(err => {
+        console.log(err)
+      })
+      if (res) {
+        const { accessToken, refreshToken } = res
+        setAccessToken(accessToken)
+        setRefreshToken(refreshToken)
+      }
+    }
+    const iconSize = ref(30)
     onMounted(() => {
+      submitLogin()
       getpic()
       getWeather()
     })
@@ -133,7 +152,9 @@ export default {
       loading,
       setRef,
       width,
-      height
+      height,
+      iconSize,
+      marks: { 16: 'small', 20: 'default', 28: 'medium', 36: 'large' }
     }
   }
 }
@@ -188,7 +209,7 @@ export default {
   @include flex-col-center;
 }
 #pic {
-  width: 12vw;
-  height: 4vw;
+  width: 450px;
+  height: 150px;
 }
 </style>

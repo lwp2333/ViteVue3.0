@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { computed } from 'vue'
+import { computed, toRefs } from 'vue'
 export default {
   name: 'LwpIcon',
   props: {
@@ -19,21 +19,21 @@ export default {
     }
   },
   setup(props, ctx) {
-    const { iconName, size } = props
-    const iconSymbol = computed(() => `#${iconName}`)
+    const { iconName, size } = toRefs(props)
+    const iconSymbol = computed(() => `#${iconName.value}`)
     const sizePx = computed(() => {
-      if (typeof size === 'number') {
-        return `${size}px`
+      if (typeof size.value === 'number') {
+        return `${size.value}px`
       }
-      switch (size) {
+      switch (size.value) {
         case 'large':
           return '36px'
         case 'medium':
           return '28px'
         case 'small':
-          return '20px'
-        default:
           return '16px'
+        default:
+          return '20px'
       }
     })
     return {

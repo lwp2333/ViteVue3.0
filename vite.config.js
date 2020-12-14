@@ -41,7 +41,7 @@ module.exports = {
    */
   proxy: {
     '/dev/api': {
-      target: 'http://www.lwp.fun:7000',
+      target: 'http://localhost:7000',
       changeOtigin: true,
       rewrite: path => path.replace(/\/dev\/api/, '')
     }
