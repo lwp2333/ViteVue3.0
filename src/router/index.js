@@ -2,7 +2,7 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import constantRoutes from './main.js'
-
+import { getAccessToken, getRefreshToken } from '/@/utils/auth'
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
@@ -46,7 +46,15 @@ router.beforeEach((to, from, next) => {
   if (to.meta.title) {
     document.title = to.meta.title
   }
-  next()
+  // 判断是否登录有 accessToken refreshToken
+  const accessToken = getAccessToken()
+  const refreshToken = getRefreshToken()
+  const isValid = Boolean(accessToken && refreshToken)
+  if (to.path === '/login') {
+    isValid ? next('/main') : next()
+  } else {
+    isValid ? next() : next('/login')
+  }
 })
 
 router.afterEach((to, from, next) => {

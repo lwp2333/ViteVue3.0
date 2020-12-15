@@ -5,8 +5,8 @@
       <div class="right">
         <!-- 其他东西 -->
         <div class="avatar">
-          <a-avatar :size="42" :src="logo" />
-          <!-- <a-dropdown>
+          <a-avatar :size="48" :src="logo" />
+          <a-dropdown>
             <a-button type="link">
               <template #icon>
                 <MoreOutlined size="32" />
@@ -15,17 +15,11 @@
             <template #overlay>
               <a-menu>
                 <a-menu-item>
-                  <a href="javascript:;">1st menu item</a>
-                </a-menu-item>
-                <a-menu-item>
-                  <a href="javascript:;">2nd menu item</a>
-                </a-menu-item>
-                <a-menu-item>
-                  <a href="javascript:;">3rd menu item</a>
+                  <a-button :loading="loginOutLoading" type="link" size="small" @click="loginOut">退出登录</a-button>
                 </a-menu-item>
               </a-menu>
             </template>
-          </a-dropdown> -->
+          </a-dropdown>
         </div>
       </div>
     </a-layout-header>
@@ -66,11 +60,12 @@
   </a-layout>
 </template>
 <script>
-import { UserOutlined, LaptopOutlined, NotificationOutlined, HomeOutlined } from '@ant-design/icons-vue'
+import { UserOutlined, LaptopOutlined, NotificationOutlined, HomeOutlined, MoreOutlined } from '@ant-design/icons-vue'
 import { reactive, ref, watchEffect } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { removeAllToken } from '/@/utils/auth'
 import menu from '../router/main'
-import logo from '/@/assets/img/avatar.jpg'
+import logo from '/@/assets/svg/logo.svg'
 import main from '../router/main'
 export default {
   name: 'Ant',
@@ -78,7 +73,8 @@ export default {
     UserOutlined,
     LaptopOutlined,
     NotificationOutlined,
-    HomeOutlined
+    HomeOutlined,
+    MoreOutlined
   },
   setup() {
     const { children: constantMenu } = menu
@@ -126,6 +122,26 @@ export default {
       const path = keyPath.reverse().join('/')
       Router.push(`/main/${path}`)
     }
+    const loginOutLoading = ref(false)
+    const loginOut = async () => {
+      loginOutLoading.value = true
+      const res = await new Promise(resolve => {
+        setTimeout(() => {
+          resolve(200)
+        }, 1200)
+      })
+      if (res === 200) {
+        // 清除本地localStorage
+        const { path } = currRoute
+        removeAllToken()
+        Router.replace({
+          path: '/login',
+          query: {
+            redirectUrl: path
+          }
+        })
+      }
+    }
     return {
       menuList,
       selectedKeys,
@@ -133,7 +149,9 @@ export default {
       openChange,
       link,
       matchRoute,
-      logo
+      logo,
+      loginOutLoading,
+      loginOut
     }
   }
 }
@@ -190,7 +208,7 @@ export default {
   margin: 0;
   @include scrollbar-Y;
 }
-.ant-menu-inline .ant-menu-item {
-  margin-top: 0;
+::v-deep(.ant-menu-inline .ant-menu-item) {
+  margin-top: 0 !important;
 }
 </style>

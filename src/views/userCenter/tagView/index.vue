@@ -6,14 +6,14 @@
     <a-tag color="green" closable @close="log"> Hooks </a-tag>
     <a-tag color="cyan" closable @close="log"> Echarts </a-tag>
     <a-row :gutter="[16, 16]">
-      <a-col :xl="12" :sm="24">
+      <a-col :xl="24" :sm="24">
         <a-spin :spinning="loading">
           <div id="he-plugin-standard"></div>
         </a-spin>
       </a-col>
-      <a-col :xl="12" :sm="24">
+      <!-- <a-col :xl="12" :sm="24">
         <img :ref="setRef" id="pic" :src="mockPic" @click="getpic" alt="mock" />
-      </a-col>
+      </a-col> -->
     </a-row>
 
     <div class="flexChange">
@@ -42,7 +42,7 @@
         </a-col>
       </a-row>
     </div>
-    <div class="info">{{ width }}, {{ height }}</div>
+    <!-- <div class="info">{{ width }}, {{ height }}</div> -->
   </div>
 </template>
 
@@ -52,8 +52,6 @@ import { useRoute } from 'vue-router'
 import iconList from '/@/constant/iconList.js'
 import lwpIcon from '../../../components/global/lwpIcon.vue'
 import { getMockPic } from '/@/api/mock'
-import { login } from '/@/api/user'
-import { setAccessToken, setRefreshToken } from '/@/utils/auth'
 import useSize from '/@/hooks/useSize'
 export default {
   name: 'TagView',
@@ -94,17 +92,17 @@ export default {
     const setRef = el => {
       picRef.value = el
     }
-    const { width, height } = useSize('pic')
-    const getpic = async () => {
-      loading.value = true
-      const res = await getMockPic().catch(() => {
-        loading.value = false
-      })
-      loading.value = false
-      if (res) {
-        mockPic.value = res.url
-      }
-    }
+    // const { width, height } = useSize('pic')
+    // const getpic = async () => {
+    //   loading.value = true
+    //   const res = await getMockPic().catch(() => {
+    //     loading.value = false
+    //   })
+    //   loading.value = false
+    //   if (res) {
+    //     mockPic.value = res.url
+    //   }
+    // }
     const getWeather = () => {
       window.WIDGET = {
         CONFIG: {
@@ -122,24 +120,9 @@ export default {
       script.src = 'https://widget.qweather.net/standard/static/js/he-standard-common.js?v=2.0'
       document.getElementsByTagName('head')[0].appendChild(script)
     }
-    const submitLogin = async () => {
-      const data = {
-        userName: 'lwp2020',
-        password: 'jujingyi3344'
-      }
-      const res = await login(data).catch(err => {
-        console.log(err)
-      })
-      if (res) {
-        const { accessToken, refreshToken } = res
-        setAccessToken(accessToken)
-        setRefreshToken(refreshToken)
-      }
-    }
     const iconSize = ref(30)
     onMounted(() => {
-      submitLogin()
-      getpic()
+      // getpic()
       getWeather()
     })
     return {
@@ -147,12 +130,8 @@ export default {
       currFlexClass,
       colorList,
       iconList,
-      mockPic,
-      getpic,
       loading,
       setRef,
-      width,
-      height,
       iconSize,
       marks: { 16: 'small', 20: 'default', 28: 'medium', 36: 'large' }
     }

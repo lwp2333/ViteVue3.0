@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { ref, reactive, watch, computed, toRefs, onMounted, onBeforeUnmount } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore, mapMutations } from 'vuex'
 import Echarts from 'echarts'
@@ -15,13 +15,19 @@ import useInterval from '/@/hooks/useInterval'
 export default {
   name: 'PieDash',
   setup() {
-    let myEcharts = reactive({})
+    let myEcharts = null
+    /**
+     * 自定义hook (定时器任务)
+     */
     const doing = () => {
-      let option = myEcharts.getOption()
-      option.series[3].startAngle = option.series[3].startAngle - 1
-      myEcharts.setOption(option)
+      if (myEcharts) {
+        let option = myEcharts.getOption()
+        option.series[3].startAngle = option.series[3].startAngle - 1
+        myEcharts.setOption(option)
+      }
     }
     const [timer, setTime, restTime, clear, startInterval] = useInterval(doing, 120, false)
+
     const initEcharts = () => {
       myEcharts = Echarts.init(document.getElementById('echartId'))
       myEcharts.setOption(option)
@@ -31,13 +37,15 @@ export default {
       myEcharts.on('mouseout', startInterval)
     }
     const resizeEcharts = () => {
-      myEcharts.resize()
+      myEcharts && myEcharts.resize()
     }
     /**
      * 自定义hook （适应屏幕）
      */
     onMounted(() => {
-      initEcharts()
+      setTimeout(() => {
+        initEcharts()
+      }, 120)
     })
     useWinResize(resizeEcharts)
     return {}

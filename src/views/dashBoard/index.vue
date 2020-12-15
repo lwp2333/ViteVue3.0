@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <!-- <div class="box">
+    <div class="box">
       <a-space>
         <a-tag color="purple">
           {{ isFullscreen ? '当前为全屏' : '当前非全屏' }}
@@ -8,7 +8,7 @@
         <a-switch v-model:checked="isFullscreen" />
         <a-button size="small" type="primary" @click="toggleFull">toggle</a-button>
       </a-space>
-    </div> -->
+    </div>
     <PieDash />
   </div>
 </template>
@@ -35,5 +35,8 @@ export default {
   height: 100%;
   display: flex;
   flex-direction: column;
+  .box{
+    margin-bottom: 20px;
+  }
 }
 </style>

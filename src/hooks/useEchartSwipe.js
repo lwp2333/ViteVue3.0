@@ -119,9 +119,11 @@ export default function useEchartSwipe(dom = null, dataOption = null, interval =
   useWinResize(resizeEcharts)
 
   onMounted(() => {
-    initPieEchart()
-    initPieEvent()
-    autoSwipe()
+    setTimeout(() => {
+      initPieEchart()
+      initPieEvent()
+      autoSwipe()
+    }, 120)
   })
 
   onUnmounted(() => {
