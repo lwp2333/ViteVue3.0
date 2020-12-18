@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { message } from 'ant-design-vue'
-import { setAccessToken, getAccessToken, setRefreshToken, getRefreshToken } from '/@/utils/auth'
+import { setAccessToken, getAccessToken, setRefreshToken, getRefreshToken, removeAllToken } from '/@/utils/auth'
 import router from '../router/index'
 import { autologin } from '/@/api/user'
 message.config({
@@ -68,6 +68,7 @@ const autoLogin = async res => {
     message.error('自动登录失败，请重新登录')
     hide()
     // 跳转登录界面
+    removeAllToken()
     window.location.href = '/#/login'
   })
   // 自动登录成功
@@ -105,6 +106,7 @@ service.interceptors.response.use(
     // 处理403 重新登录逻辑
     if (err.response.status === 403) {
       message.error('登录凭证失效，请重新登录')
+      removeAllToken()
       window.location.href = '/#/login'
       return
     }
@@ -114,7 +116,7 @@ service.interceptors.response.use(
 )
 service.download = async (url, params) => {
   // 下载二进制文件
-  const fullUrl = process.env.VUE_APP_BASE_API + url
+  const fullUrl = baseURL + url
   const res = await axios.get(fullUrl, { params, responseType: 'blob' })
   // 保存文件
   const { fileName } = params
