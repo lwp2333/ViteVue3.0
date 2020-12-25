@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="PieDash">
     <div id="echartId"></div>
   </div>
 </template>
@@ -54,7 +54,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container {
+.PieDash {
   width: 100%;
   height: 100%;
   #echartId {

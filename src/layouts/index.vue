@@ -3,13 +3,24 @@
     <a-layout-header class="header">
       <div class="logo">next-admin</div>
       <div class="right">
-        <!-- 其他东西 -->
+        <a-space size="middle">
+          <a-tooltip title="刷新页面" arrow-point-at-center>
+            <ReloadOutlined @click="refreshView" :style="iconStyle" />
+          </a-tooltip>
+          <a-tooltip v-if="!isFullscreen" title="进入全屏" arrow-point-at-center>
+            <FullscreenExitOutlined @click="toggleFull" :style="iconStyle" />
+          </a-tooltip>
+          <a-tooltip v-else title="退出全屏" arrow-point-at-center>
+            <FullscreenExitOutlined @click="toggleFull" :style="iconStyle" />
+          </a-tooltip>
+        </a-space>
+        <!-- avatar -->
         <div class="avatar">
           <a-avatar :size="48" :src="logo" />
           <a-dropdown>
             <a-button type="link">
               <template #icon>
-                <MoreOutlined size="32" />
+                <MoreOutlined :style="iconStyle" />
               </template>
             </a-button>
             <template #overlay>
@@ -36,7 +47,7 @@
           <template v-for="(item, index) in menuList" :key="index">
             <a-sub-menu v-if="item.children" :key="item.path">
               <template #title>
-                <span><user-outlined />{{ item.meta.title }}</span>
+                <span><UserOutlined />{{ item.meta.title }}</span>
               </template>
               <a-menu-item v-for="subItem in item.children" :key="subItem.path">{{ subItem.meta.title }}</a-menu-item>
             </a-sub-menu>
@@ -47,12 +58,14 @@
       <a-layout>
         <a-breadcrumb class="breadcrumb">
           <a-breadcrumb-item v-for="(item, index) in matchRoute" :key="index">
-            <router-link v-if="!item.meta.title" :to="item.path"> <home-outlined /> 仪表盘 </router-link>
+            <router-link v-if="!item.meta.title" :to="item.path"> <HomeOutlined /> 仪表盘 </router-link>
             <router-link v-else :to="item.path"> {{ item.meta.title }} </router-link>
           </a-breadcrumb-item>
         </a-breadcrumb>
         <a-layout-content class="content">
-          <router-view></router-view>
+          <a-spin :spinning="viewSpin" tip="加载中..." class="spinSwap">
+            <router-view v-if="!viewSpin"></router-view>
+          </a-spin>
         </a-layout-content>
         <a-layout-footer :style="{ textAlign: 'center', padding: '12px' }"> next-admin©2020 Created by lwp2333 </a-layout-footer>
       </a-layout>
@@ -60,9 +73,10 @@
   </a-layout>
 </template>
 <script>
-import { UserOutlined, LaptopOutlined, NotificationOutlined, HomeOutlined, MoreOutlined } from '@ant-design/icons-vue'
-import { reactive, ref, watchEffect } from 'vue'
+import { UserOutlined, HomeOutlined, MoreOutlined, ReloadOutlined, FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
+import { nextTick, reactive, ref, watchEffect } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import useFullscreen from '/@/hooks/useFullscreen'
 import { removeAllToken } from '/@/utils/auth'
 import menu from '../router/main'
 import logo from '/@/assets/svg/logo.svg'
@@ -71,10 +85,11 @@ export default {
   name: 'Ant',
   components: {
     UserOutlined,
-    LaptopOutlined,
-    NotificationOutlined,
     HomeOutlined,
-    MoreOutlined
+    MoreOutlined,
+    ReloadOutlined,
+    FullscreenOutlined,
+    FullscreenExitOutlined
   },
   setup() {
     const { children: constantMenu } = menu
@@ -84,6 +99,8 @@ export default {
     const Router = useRouter()
     const currRoute = useRoute()
     const matchRoute = reactive([])
+    const { isFullscreen, setFull, exitFull, toggleFull } = useFullscreen()
+
     watchEffect(() => {
       /**
        * create 根据当前路由url，绑定 选中当前菜单
@@ -128,7 +145,7 @@ export default {
       const res = await new Promise(resolve => {
         setTimeout(() => {
           resolve(200)
-        }, 1200)
+        }, 200)
       })
       if (res === 200) {
         // 清除本地localStorage
@@ -142,6 +159,18 @@ export default {
         })
       }
     }
+    const iconStyle = { fontSize: '18px' }
+    const viewSpin = ref(false)
+    const refreshView = () => {
+      viewSpin.value = true
+      // nextTick 快到不展示loading
+      // nextTick(() => {
+      //   viewSpin.value = false
+      // })
+      setTimeout(() => {
+        viewSpin.value = false
+      }, 400)
+    }
     return {
       menuList,
       selectedKeys,
@@ -150,8 +179,14 @@ export default {
       link,
       matchRoute,
       logo,
+      isFullscreen,
+      toggleFull,
       loginOutLoading,
-      loginOut
+      loginOut,
+      iconStyle,
+      // 刷新页面
+      viewSpin,
+      refreshView
     }
   }
 }
@@ -166,7 +201,7 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 24px !important;
+    padding: 0 12px !important;
     .logo {
       padding: 12px;
       height: 32px;
@@ -183,6 +218,7 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
+      color: ivory;
       .avatar {
         margin-left: 24px;
       }
@@ -210,5 +246,21 @@ export default {
 }
 ::v-deep(.ant-menu-inline .ant-menu-item) {
   margin-top: 0 !important;
+}
+.spinSwap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+::v-deep(.ant-spin-nested-loading) {
+  width: 100%;
+  height: 100%;
+  .ant-spin-container {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>
