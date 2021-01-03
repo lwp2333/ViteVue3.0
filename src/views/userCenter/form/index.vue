@@ -106,11 +106,13 @@ export default {
     return {
       labelCol: {
         xl: 4,
-        sm: 8
+        md: 6,
+        xs: 8
       },
       wrapperCol: {
-        xl: 10,
-        sm: 16
+        xl: 12,
+        md: 14,
+        xs: 16
       },
       ruleForm,
       form,

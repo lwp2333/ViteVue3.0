@@ -1,4 +1,4 @@
-const iconList = [
+const iconFontList = [
   { name: '帮帮忙', type: 'icon-bangbangmangmdpi' },
   { name: '公告', type: 'icon-gonggaomdpi' },
   { name: '常用电话', type: 'icon-changyongdianhuamdpi' },
@@ -72,3 +72,5 @@ const iconList = [
   { name: '绿植19', type: 'icon-lvzhi19' },
   { name: '绿植20', type: 'icon-lvzhi20' }
 ]
+
+export default iconFontList
