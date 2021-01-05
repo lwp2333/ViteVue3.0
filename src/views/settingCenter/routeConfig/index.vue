@@ -8,17 +8,16 @@
           </template>
           <template #extra>
             <a-space>
-              <a-button type="link">添加菜单</a-button>
-              <a-button type="link">添加子菜单</a-button>
+              <a-button type="link" @click="openAddDrawer">添加</a-button>
             </a-space>
           </template>
           <a-tree
-            :tree-data="routeList"
+            :tree-data="routeList.tree"
             :replaceFields="resetFieldMap"
-            :selectable="false"
+            :selectable="true"
             show-icon
             default-expand-all
-            @click="onClickNode"
+            @select="onSelectNode"
             @rightClick="onRightClick"
           >
             <template #icon="{ iconType }">
@@ -28,11 +27,9 @@
         </a-card>
       </a-col>
       <a-col :xl="18" :xs="24">
-        <a-card>
+        <a-card :loading="detailLoading">
           <template #title>
-            <span :style="{ lineHeight: '32px', fontWeight: 600 }"
-              >{{ routeConfigform ? (routeConfigform.isLeaf ? '页面' : '菜单') : '' }}配置</span
-            >
+            <span :style="{ lineHeight: '32px', fontWeight: 600 }">配置</span>
           </template>
           <template #extra>
             <a-button v-show="routeConfigform && isLimitEdit" :disabled="!routeConfigform || !isLimitEdit" type="link" @click="onEdit">
@@ -47,11 +44,11 @@
           </template>
           <a-form
             v-if="routeConfigform"
-            :ref="setRef"
+            :ref="setEditRef"
             :model="routeConfigform"
             :rules="rules"
-            :label-col="labelCol"
-            :wrapper-col="wrapperCol"
+            :label-col="editLabelCol"
+            :wrapper-col="editWrapperCol"
           >
             <a-form-item label="标题" name="title">
               <a-input v-model:value="routeConfigform.title" :disabled="isLimitEdit" />
@@ -62,9 +59,15 @@
             <a-form-item label="图标" name="iconType">
               <a-select allowClear v-model:value="routeConfigform.iconType" :disabled="isLimitEdit">
                 <a-select-option v-for="item in iconOption" :key="item.name" :value="item.type">
-                  {{ item.name }} - <icon-font :type="item.type" :style="{ fontSize: '18px' }" />
+                  <span> {{ item.name }} - <icon-font :type="item.type" :style="{ fontSize: '16px' }" /></span>
                 </a-select-option>
               </a-select>
+            </a-form-item>
+            <a-form-item label="类型" name="isLeaf">
+              <a-radio-group v-model:value="routeConfigform.isLeaf" :disabled="isLimitEdit">
+                <a-radio :value="false"> 菜单 </a-radio>
+                <a-radio :value="true"> 页面 </a-radio>
+              </a-radio-group>
             </a-form-item>
             <a-form-item :wrapper-col="{ xl: 10, sm: 16, offset: 8 }">
               <a-space v-if="!isLimitEdit">
@@ -77,6 +80,49 @@
         </a-card>
       </a-col>
     </a-row>
+    <a-drawer :width="375" title="添加" placement="right" :maskClosable="false" :closable="false" v-model:visible="addDrawerShow">
+      <a-form :ref="setAddRef" :model="addMenuform" :rules="rules" :label-col="addLabelCol" :wrapper-col="addWrapperCol">
+        <a-form-item label="上级" name="parentId">
+          <!-- <a-select allowClear v-model:value="addMenuform.parentId">
+            <a-select-option :value="null">
+              <span>无</span>
+            </a-select-option>
+          </a-select> -->
+          <a-tree-select
+            v-model:value="addMenuform.parentId"
+            :tree-data="menuOption.tree"
+            :replaceFields="resetFieldMap"
+            allow-clear
+            search-placeholder="请选择上级"
+          />
+        </a-form-item>
+        <a-form-item label="标题" name="title">
+          <a-input v-model:value="addMenuform.title" />
+        </a-form-item>
+        <a-form-item label="路径" name="path">
+          <a-input v-model:value="addMenuform.path" />
+        </a-form-item>
+        <a-form-item label="图标" name="iconType">
+          <a-select allowClear v-model:value="addMenuform.iconType">
+            <a-select-option v-for="item in iconOption" :key="item.name" :value="item.type">
+              <span> {{ item.name }} - <icon-font :type="item.type" :style="{ fontSize: '16px' }" /></span>
+            </a-select-option>
+          </a-select>
+        </a-form-item>
+        <a-form-item label="类型" name="isLeaf">
+          <a-radio-group v-model:value="addMenuform.isLeaf">
+            <a-radio :value="false"> 菜单 </a-radio>
+            <a-radio :value="true"> 页面 </a-radio>
+          </a-radio-group>
+        </a-form-item>
+        <a-form-item :wrapper-col="{ xl: 10, sm: 16, offset: 8 }">
+          <a-space>
+            <a-button @click="onAddCancel"> 取消 </a-button>
+            <a-button type="primary" @click="onAddSubmit"> 保存 </a-button>
+          </a-space>
+        </a-form-item>
+      </a-form>
+    </a-drawer>
   </div>
 </template>
 
@@ -86,7 +132,7 @@ import { EditOutlined, DeleteOutlined } from '@ant-design/icons-vue'
 import { NotEmpty, NotRadio, limitStr } from '/@/utils/validate'
 import iconFont from '/@/components/global/iconFont.js'
 import noData from '/@/components/global/noData.vue'
-import routeConfig from '/@/constant/routeConfig.js'
+import { getMenuList, getMenu, updateMenu, delMenu, getMenuFolder, createMenu } from '/@/api/menu'
 import iconList from '/@/constant/iconFontList.js'
 export default {
   name: 'RouteConfig',
@@ -97,113 +143,175 @@ export default {
     noData
   },
   setup() {
+    // 获取菜单树形数据
+
     const loading = ref(false)
+    const routeList = reactive({
+      tree: null
+    })
+    const initTreeData = async () => {
+      loading.value = true
+      const res = await getMenuList().catch(() => {
+        loading.value = false
+      })
+      routeList.tree = res || []
+      loading.value = false
+    }
+    onMounted(() => {
+      initTreeData()
+    })
+
+    // 右侧配置 数据加载逻辑, 配置表单逻辑
+    const detailLoading = ref(false)
+    const ruleForm = ref(null)
+    const isLimitEdit = ref(true)
     const currentNode = reactive({
       routeConfigform: null
     })
+    const iconOption = reactive(iconList)
+
+    const getMenuDetail = async nodeId => {
+      detailLoading.value = true
+      const res = await getMenu({ _id: nodeId }).catch(() => {
+        detailLoading.value = false
+      })
+      const { _id, title, path, isLeaf, iconType } = res
+      currentNode.routeConfigform = { _id, title, path, isLeaf, iconType }
+      detailLoading.value = false
+    }
+
     const onSelectNode = (keys, { selectedNodes, node }) => {
-      // 取消选择或者选择其他的时候 都重置为空
+      // 取消选择或者选择其他的时候 都先重置为空, 都限制表单输入
       currentNode.routeConfigform = null
+      isLimitEdit.value = true
       if (selectedNodes.length) {
-        const { props } = selectedNodes[0]
-        const { id, title, path, isLeaf, iconType } = props
-        // 清除上一个
+        const {
+          props: { _id }
+        } = selectedNodes[0]
         nextTick(() => {
-          currentNode.routeConfigform = {
-            id,
-            title,
-            path,
-            isLeaf,
-            iconType
-          }
+          getMenuDetail(_id)
         })
       }
     }
-    const onClickNode = (e, node) => {
-      // 清除上一个表单
-      currentNode.routeConfigform = null
-      const {
-        dataRef: { id, title, path, isLeaf, iconType }
-      } = node
-      nextTick(() => {
-        currentNode.routeConfigform = {
-          id,
-          title,
-          path,
-          isLeaf,
-          iconType
-        }
-      })
-    }
+
     const onRightClick = ({ node }) => {
       const { eventKey, isLeaf } = node
       console.log(eventKey, isLeaf)
     }
-    const routeList = reactive(routeConfig)
-    const iconOption = reactive(iconList)
-    // 配置表单
-    const ruleForm = ref(null)
-    const isLimitEdit = ref(true)
-    const setRef = el => {
+    const setEditRef = el => {
       ruleForm.value = el
     }
     const onEdit = () => {
       isLimitEdit.value = false
     }
+    const onDell = () => {
+      const { _id } = currentNode.routeConfigform
+      delMenu({ _id }).then(() => {
+        // 删除成功表单置空
+        currentNode.routeConfigform = null
+        // 重新加载菜单数据
+        initTreeData()
+      })
+    }
     const onEditSubmit = () => {
-      ruleForm.value
-        .validate()
-        .then(() => {
-          console.log('values', currentNode.routeConfigform)
+      ruleForm.value.validate().then(() => {
+        updateMenu(currentNode.routeConfigform).then(() => {
+          // 修改成功表单置空
+          currentNode.routeConfigform = null
+          // 重新加载菜单数据
+          initTreeData()
         })
-        .catch(error => {
-          console.log('error', error)
-        })
+      })
     }
     const onEditCancel = () => {
       isLimitEdit.value = true
       ruleForm.value.resetFields()
     }
-    const onDell = () => {
-      currentNode.routeConfigform = null
-    }
 
-    onMounted(() => {
-      loading.value = true
-      setTimeout(() => {
-        loading.value = false
-      }, 800)
+    // 添加菜单/页面 逻辑
+    const addDrawerShow = ref(false)
+    const addRuleForm = ref(null)
+    const addMenuform = reactive({
+      title: '',
+      path: '',
+      isLeaf: false,
+      iconType: null,
+      parentId: null
     })
+    const menuOption = reactive({
+      tree: null
+    })
+    const getMenuOption = async () => {
+      const res = await getMenuFolder()
+      menuOption.tree = res || []
+    }
+    const setAddRef = el => {
+      addRuleForm.value = el
+    }
+    const openAddDrawer = () => {
+      addDrawerShow.value = true
+      getMenuOption()
+    }
+    const onAddSubmit = () => {
+      addRuleForm.value.validate().then(() => {
+        console.log(addMenuform)
+        createMenu(addMenuform).then(() => {
+          onAddCancel()
+          // 重新加载菜单数据
+          initTreeData()
+        })
+      })
+    }
+    const onAddCancel = () => {
+      addRuleForm.value.resetFields()
+      addDrawerShow.value = false
+    }
     return {
       loading,
       routeList,
-      resetFieldMap: { children: 'children', title: 'title', key: 'id' },
+      resetFieldMap: { value: '_id', key: '_id' },
       onSelectNode,
-      onClickNode,
       onRightClick,
-      // 配置表单
-      setRef,
-      labelCol: {
+
+      // 配置表单逻辑
+      detailLoading,
+      setEditRef,
+      editLabelCol: {
         xl: 4,
         sm: 8
       },
-      wrapperCol: {
+      editWrapperCol: {
         xl: 10,
         sm: 16
       },
-
       ...toRefs(currentNode),
       iconOption, // 图标选择列表
       rules: {
-        title: [limitStr('标题', 2, 8)],
+        title: [limitStr('标题', 2, 12)],
         path: [NotEmpty('路径')],
-        iconType: [NotRadio('图标')]
+        iconType: [NotRadio('图标')],
+        isLeaf: [NotRadio('路径')]
       },
       isLimitEdit,
       onEdit,
       onEditSubmit,
       onEditCancel,
-      onDell
+      onDell,
+      // 添加菜单/页面逻辑
+
+      addDrawerShow,
+      openAddDrawer,
+      setAddRef,
+      addLabelCol: {
+        span: 4
+      },
+      addWrapperCol: {
+        span: 20
+      },
+      menuOption,
+      addMenuform,
+      onAddSubmit,
+      onAddCancel
     }
   }
 }

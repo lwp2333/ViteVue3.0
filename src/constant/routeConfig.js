@@ -130,7 +130,7 @@ export default [
                 iconType: 'icon-zhuangxiubeianmdpi',
                 children: [
                   {
-                    id: '102-2-1-1',
+                    id: '102-2-1-1-1',
                     title: '测试多层-1-1-1',
                     path: '/main/settingCenter/test-1-1-1',
                     isLeaf: true,
