@@ -16,9 +16,11 @@
             :replaceFields="resetFieldMap"
             :selectable="true"
             show-icon
+            draggable
             default-expand-all
             @select="onSelectNode"
             @rightClick="onRightClick"
+            @drop="onDropNode"
           >
             <template #icon="{ iconType }">
               <icon-font v-if="iconType" :type="iconType" />
@@ -83,11 +85,6 @@
     <a-drawer :width="375" title="添加" placement="right" :maskClosable="false" :closable="false" v-model:visible="addDrawerShow">
       <a-form :ref="setAddRef" :model="addMenuform" :rules="rules" :label-col="addLabelCol" :wrapper-col="addWrapperCol">
         <a-form-item label="上级" name="parentId">
-          <!-- <a-select allowClear v-model:value="addMenuform.parentId">
-            <a-select-option :value="null">
-              <span>无</span>
-            </a-select-option>
-          </a-select> -->
           <a-tree-select
             v-model:value="addMenuform.parentId"
             :tree-data="menuOption.tree"
@@ -128,16 +125,18 @@
 
 <script>
 import { ref, onMounted, reactive, watch, computed, toRefs, nextTick } from 'vue'
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons-vue'
+import { PlusCircleOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
 import { NotEmpty, NotRadio, limitStr } from '/@/utils/validate'
 import iconFont from '/@/components/global/iconFont.js'
 import noData from '/@/components/global/noData.vue'
-import { getMenuList, getMenu, updateMenu, delMenu, getMenuFolder, createMenu } from '/@/api/menu'
+import { getMenuList, dragDropMenu, getMenu, updateMenu, delMenu, getMenuFolder, createMenu } from '/@/api/menu'
 import iconList from '/@/constant/iconFontList.js'
 export default {
   name: 'RouteConfig',
   components: {
     iconFont,
+    PlusCircleOutlined,
     EditOutlined,
     DeleteOutlined,
     noData
@@ -162,6 +161,7 @@ export default {
     })
 
     // 右侧配置 数据加载逻辑, 配置表单逻辑
+
     const detailLoading = ref(false)
     const ruleForm = ref(null)
     const isLimitEdit = ref(true)
@@ -193,7 +193,25 @@ export default {
         })
       }
     }
-
+    const onDropNode = e => {
+      const {
+        dragNode: { eventKey: drapNodeId },
+        dropPosition,
+        node: { eventKey: dropNodeId, pos }
+      } = e
+      const dropPos = pos.split('-')
+      const dropPositionNum = dropPosition - Number(dropPos[dropPos.length - 1]) // -1 top 、0 inside、 1 bottom
+      const positionTypeList = ['top', 'inside', 'bottom']
+      const data = {
+        drapNodeId,
+        dropNodeId,
+        positionType: positionTypeList[dropPositionNum + 1]
+      }
+      dragDropMenu(data).then(() => {
+        // 重新加载菜单数据
+        initTreeData()
+      })
+    }
     const onRightClick = ({ node }) => {
       const { eventKey, isLeaf } = node
       console.log(eventKey, isLeaf)
@@ -229,6 +247,7 @@ export default {
     }
 
     // 添加菜单/页面 逻辑
+
     const addDrawerShow = ref(false)
     const addRuleForm = ref(null)
     const addMenuform = reactive({
@@ -256,6 +275,7 @@ export default {
       addRuleForm.value.validate().then(() => {
         console.log(addMenuform)
         createMenu(addMenuform).then(() => {
+          message.success(`添加菜单成功`)
           onAddCancel()
           // 重新加载菜单数据
           initTreeData()
@@ -266,14 +286,17 @@ export default {
       addRuleForm.value.resetFields()
       addDrawerShow.value = false
     }
+
     return {
       loading,
       routeList,
       resetFieldMap: { value: '_id', key: '_id' },
       onSelectNode,
+      onDropNode,
       onRightClick,
 
       // 配置表单逻辑
+
       detailLoading,
       setEditRef,
       editLabelCol: {
@@ -297,6 +320,7 @@ export default {
       onEditSubmit,
       onEditCancel,
       onDell,
+
       // 添加菜单/页面逻辑
 
       addDrawerShow,

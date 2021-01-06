@@ -10,6 +10,15 @@ export function getMenuList(params) {
 }
 
 /** 获取单个菜单节点详情*/
+export function dragDropMenu(data) {
+  return request({
+    url: '/dragDropMenu',
+    method: 'post',
+    data
+  })
+}
+
+/** 获取单个菜单节点详情*/
 export function getMenu(params) {
   return request({
     url: '/getMenu',
