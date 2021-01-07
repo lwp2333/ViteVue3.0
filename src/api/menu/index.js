@@ -37,11 +37,11 @@ export function updateMenu(data) {
 
 // 删除菜单节点
 
-export function delMenu(params) {
+export function delMenu(data) {
   return request({
     url: '/delMenu',
     method: 'delete',
-    params
+    data
   })
 }
 // 获取菜单目录，除去页面树形结构

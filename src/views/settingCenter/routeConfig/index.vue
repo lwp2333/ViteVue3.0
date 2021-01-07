@@ -8,6 +8,7 @@
           </template>
           <template #extra>
             <a-space>
+              拖拽:<a-switch v-model:checked="treeDraggable" size="small"></a-switch>
               <a-button type="link" @click="openAddDrawer">添加</a-button>
             </a-space>
           </template>
@@ -16,8 +17,7 @@
             :replaceFields="resetFieldMap"
             :selectable="true"
             show-icon
-            draggable
-            default-expand-all
+            :draggable="treeDraggable"
             @select="onSelectNode"
             @rightClick="onRightClick"
             @drop="onDropNode"
@@ -37,7 +37,7 @@
             <a-button v-show="routeConfigform && isLimitEdit" :disabled="!routeConfigform || !isLimitEdit" type="link" @click="onEdit">
               <template #icon> <EditOutlined /> </template>编辑
             </a-button>
-            <a-popconfirm title="确认删除该条记录?" placement="bottom" ok-text="确认" cancel-text="取消" @confirm="onDell">
+            <a-popconfirm title="确认删除该菜单及其子菜单?" placement="bottom" ok-text="确认" cancel-text="取消" @confirm="onDell">
               <a-button v-show="routeConfigform && isLimitEdit" type="link">
                 <template #icon> <DeleteOutlined :style="{ color: 'red' }" /> </template>
                 <span :style="{ color: 'red' }">删除</span>
@@ -145,6 +145,7 @@ export default {
     // 获取菜单树形数据
 
     const loading = ref(false)
+    const treeDraggable = ref(false)
     const routeList = reactive({
       tree: null
     })
@@ -289,6 +290,7 @@ export default {
 
     return {
       loading,
+      treeDraggable,
       routeList,
       resetFieldMap: { value: '_id', key: '_id' },
       onSelectNode,
