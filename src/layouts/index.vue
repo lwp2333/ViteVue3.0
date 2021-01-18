@@ -67,7 +67,10 @@
             <router-view v-if="!viewSpin"></router-view>
           </a-spin>
         </a-layout-content>
-        <a-layout-footer :style="{ textAlign: 'center', padding: '12px' }"> next-admin©2020 Created by lwp2333 </a-layout-footer>
+        <a-layout-footer :style="{ textAlign: 'center', padding: '12px' }">
+          next-admin©2020 Created by lwp2333 备案号：
+          <a href="https://beian.miit.gov.cn/" target="blank">赣ICP备18004347号-1</a>
+        </a-layout-footer>
       </a-layout>
     </a-layout>
   </a-layout>

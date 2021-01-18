@@ -16,7 +16,7 @@
         <a-button type="link" size="small" @click="clear"> 停止 </a-button>
       </a-col>
     </a-row>
-    <seamlessScroll :height="300">
+    <seamlessScroll :height="300" showControl>
       <a-alert message="Success Tips" type="success" show-icon />
       <a-alert message="Informational Notes" type="info" show-icon />
       <a-alert message="Warning" type="warning" show-icon />
