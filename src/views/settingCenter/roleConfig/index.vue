@@ -17,7 +17,7 @@
             </a-form-item>
           </a-col>
           <a-col v-bind="formItemCol">
-            <a-form-item label="操作列表">
+            <a-form-item label="其他操作">
               <a-space>
                 <a-button type="primary">新增角色</a-button>
               </a-space>
@@ -46,13 +46,21 @@
       </template>
     </a-table-column>
   </a-table>
-  <a-drawer :width="375" title="角色配置" placement="right" :maskClosable="false" :closable="false" v-model:visible="configDrawerShow">
+  <a-drawer
+    :width="mapResultWidth"
+    title="角色配置"
+    placement="right"
+    :maskClosable="false"
+    :closable="false"
+    v-model:visible="configDrawerShow"
+  >
     <a-alert message="注意选中子菜单时候，不要忘记选中父级菜单" type="info" show-icon />
     <a-card :loading="loading" :bordered="false">
       <a-tree
         :checkedKeys="bindMenu"
         :tree-data="tree"
         :replaceFields="resetFieldMap"
+        :selectable="false"
         checkable
         checkStrictly
         show-icon
@@ -77,7 +85,8 @@
 import { ref, reactive, watch, computed, toRefs, onMounted } from 'vue'
 import { formLabelCol, formWrapperCol, formItemCol } from '/@/constant/rowColOptions'
 import useTableRequest from '/@/hooks/useTableRequest'
-import { getRoleListByPage, updateRole } from '/@/api/role'
+import useDeviceInfo from '/@/hooks/useDeviceInfo'
+import { getRoleListByPage, getRoleDetail, updateRole } from '/@/api/role'
 import { getMenuList } from '/@/api/menu'
 import iconFont from '/@/components/global/iconFont.js'
 export default {
@@ -86,6 +95,14 @@ export default {
     iconFont
   },
   setup() {
+    const { deviceWidth, deviceHeight, devicePixelRatio, deviceScreenType, mapResultWidth } = useDeviceInfo({
+      xs: '100%',
+      sm: '88%',
+      md: '76%',
+      lg: '64%',
+      xl: '52%',
+      xxl: '40%'
+    })
     const search = reactive({
       pageNum: 1,
       pageSize: 10,
@@ -101,9 +118,7 @@ export default {
     } = useTableRequest(getRoleListByPage, search, true)
     const handleConfigDetail = row => {
       configDrawerShow.value = true
-      currentRole.bindMenu = row.bindMenu
-      currentRole.id = row._id
-      initTreeData()
+      initConfigData(row)
     }
     const configDrawerShow = ref(false)
 
@@ -111,22 +126,21 @@ export default {
       tree: null
     })
     const currentRole = reactive({
-      bindMenu: {
-        checked: [],
-        halfChecked: []
-      },
+      bindMenu: [],
       id: ''
     })
     const loading = ref(false)
-    const initTreeData = async () => {
+    const initConfigData = async ({ _id }) => {
       loading.value = true
       const res = await getMenuList().catch(() => {
         loading.value = false
       })
       routeList.tree = res || []
       loading.value = false
+      const currentRoleDetail = await getRoleDetail({ _id })
+      currentRole.bindMenu = currentRoleDetail.bindMenu
+      currentRole.id = currentRoleDetail._id
     }
-    onMounted(() => {})
     const onCheckNode = checkKeys => {
       const { checked } = checkKeys
       currentRole.bindMenu = [...checked]
@@ -163,7 +177,12 @@ export default {
       loading,
       onCheckNode,
       onConfigSubmit,
-      onConfigCancel
+      onConfigCancel,
+      deviceWidth,
+      deviceHeight,
+      devicePixelRatio,
+      deviceScreenType,
+      mapResultWidth
     }
   }
 }
@@ -174,8 +193,5 @@ export default {
   width: 100%;
   padding: 24px;
   text-align: center;
-  position: absolute;
-  left: 0px;
-  bottom: 0px;
 }
 </style>
