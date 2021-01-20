@@ -1,14 +1,14 @@
 <template>
   <div class="container">
     <img class="loginBg" :src="loginBg" alt="login" />
-    <div class="loginCard">
+    <div class="loginContent">
       <a-card hoverable title="Next Admin" :tab-list="tabList" :active-tab-key="tabkey" @tabChange="tabChange">
         <template #customRender="item">
           <span> {{ item.key }} </span>
         </template>
         <div class="loginForm" v-if="tabkey === 'login'">
           <a-form :ref="setRef" :model="loginForm" :rules="loginRules" :label-col="labelCol" :wrapper-col="wrapperCol">
-            <a-form-item label="用户名" name="userName">
+            <a-form-item label="用户名" name="userName" v-bind="{ span: 24 }">
               <a-input v-model:value="loginForm.userName" placeholder="用户名随便输入" />
             </a-form-item>
             <a-form-item label="密码" name="password">
@@ -16,7 +16,10 @@
             </a-form-item>
           </a-form>
           <div class="action">
-            <a-button :loading="loginLoading" type="primary" @click="loginAction">登录</a-button>
+            <a-space size="large">
+              <a-button @click="resetForm">重置</a-button>
+              <a-button :loading="loginLoading" type="primary" @click="loginAction">登录</a-button>
+            </a-space>
           </div>
         </div>
         <div class="registerForm" v-else>register</div>
@@ -75,9 +78,9 @@ export default {
         })
       }
     }
-    // const resetForm = () => {
-    //   loginFormRef.value.resetFields()
-    // }
+    const resetForm = () => {
+      loginFormRef.value.resetFields()
+    }
     // 注册表单逻辑
     return {
       loginBg,
@@ -85,10 +88,6 @@ export default {
         {
           key: 'login',
           tab: '登录'
-        },
-        {
-          key: 'register',
-          tab: '注册'
         }
       ],
       tabkey,
@@ -96,12 +95,10 @@ export default {
 
       setRef,
       labelCol: {
-        xl: 6,
-        sm: 8
+        span: 6
       },
       wrapperCol: {
-        xl: 18,
-        sm: 16
+        span: 18
       },
       loginFormRef,
       loginForm,
@@ -110,6 +107,7 @@ export default {
         password: [NotEmpty('密码')]
       },
       loginAction,
+      resetForm,
       loginLoading
     }
   }
@@ -124,19 +122,25 @@ export default {
   .loginBg {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
   }
-  .loginCard {
+  .loginContent {
+    width: 480px;
     opacity: 0.92;
     position: absolute;
     top: 28%;
     right: 12%;
+    @media screen and (max-width: 576px) {
+      width: 100vw;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
   }
 }
 .loginForm,
 .registerForm {
-  width: 360px;
-  min-height: 180px;
+  padding: 24px 24px 24px 0px;
 }
 .action {
   display: flex;
