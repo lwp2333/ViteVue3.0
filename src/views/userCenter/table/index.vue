@@ -127,7 +127,7 @@ import {
   LoadingOutlined,
   PlusOutlined
 } from '@ant-design/icons-vue'
-import { getUserListByPage, delUser, createUser } from '/@/api/user'
+import { getUserListByPage, delUser, createUser, downloadFile } from '/@/api/user'
 import { message } from 'ant-design-vue'
 import useTableRequest from '/@/hooks/useTableRequest'
 export default {
@@ -255,7 +255,10 @@ export default {
     const handleCancel = () => {
       visible.value = false
     }
-    const handleSubmit = () => {}
+    const handleSubmit = () => {
+      const fileName = '照片磁贴.jpg'
+      downloadFile({ fileName })
+    }
     /**
      * 编辑逻辑
      */

@@ -78,6 +78,11 @@ const autoLogin = async res => {
   hide()
   window.location.reload() //浏览器刷新，体验不友好
 }
+const redirectToLogin = () => {
+  message.error('登录凭证失效，请重新登录')
+  removeAllToken()
+  window.location.href = '/#/login'
+}
 // 响应拦截
 service.interceptors.response.use(
   res => {
@@ -99,39 +104,37 @@ service.interceptors.response.use(
       case 403:
         return autoLogin(res)
       default:
-        break
+        return danger(res)
     }
   },
   err => {
     // 处理403 重新登录逻辑
     if (err.response.status === 403) {
-      message.error('登录凭证失效，请重新登录')
-      removeAllToken()
-      window.location.href = '/#/login'
+      redirectToLogin()
       return
     }
-    message.error(err.message)
-    return Promise.reject(err.message)
+    // 过滤掉cancel 接口请求的提示
+    if (err.message !== '未完成的接口请求已取消') {
+      message.error(err.message)
+    }
+    return Promise.reject(err)
   }
 )
-service.download = async (url, params) => {
-  // 下载二进制文件
-  const fullUrl = baseURL + url
+//增加一个axios 实例service的属性download
+service.download = async ({ url, params }) => {
+  const fullUrl = baseURL + url // 注意baseURL最后是否有'/', url一般都写了'/'，所以环境变量配置url的最后一般不加'/'
   const res = await axios.get(fullUrl, { params, responseType: 'blob' })
-  // 保存文件
-  const { fileName } = params
   if (!res.data) {
     message.error('文件下载失败')
     return
   }
-  if (window.navigator.msSaveBlob) {
-    navigator.msSaveBlob(res.data, fileName)
-    return
-  }
-  // 处理兼容IE
+  // 保存文件
+  const { fileName } = params
+  console.log(res.data)
   let blobUrl = window.URL.createObjectURL(res.data)
   let link = document.createElement('a')
-  link.download = blobUrl
+  link.href = blobUrl
+  fileName && link.setAttribute('download', fileName)
   link.click()
   window.URL.revokeObjectURL(blobUrl)
 }
@@ -139,7 +142,7 @@ service.download = async (url, params) => {
 router.beforeEach((to, from, next) => {
   window.axiosCalcelTokenArr.forEach((item, index) => {
     if (item) {
-      item.cancel('上个页面未完成的接口请求已成功取消')
+      item.cancel('未完成的接口请求已取消')
       window.axiosCalcelTokenArr.splice(index, 1)
     }
   })
