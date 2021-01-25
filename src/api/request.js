@@ -130,7 +130,7 @@ service.download = async ({ url, params }) => {
   }
   // 保存文件
   const { fileName } = params
-  console.log(res.data)
+  
   let blobUrl = window.URL.createObjectURL(res.data)
   let link = document.createElement('a')
   link.href = blobUrl
