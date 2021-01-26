@@ -99,7 +99,18 @@
           </a-upload>
         </a-form-item>
         <a-form-item label="昵称" name="name">
-          <a-input v-model:value="form.name" />
+          <!-- <a-input v-model:value="form.name" /> -->
+          <a-auto-complete
+            v-model:value="form.name"
+            placeholder="请输入查询"
+            :options="options"
+            :filterOption="false"
+            @search="handleSearch"
+          >
+            <template #options>
+              <a-spin v-if="spining" />
+            </template>
+          </a-auto-complete>
         </a-form-item>
         <a-form-item label="年龄" name="age">
           <a-textarea v-model:value="form.age" />
@@ -116,7 +127,7 @@
 </template>
 
 <script>
-import { ref, reactive, watch, computed, toRefs, onMounted } from 'vue'
+import { ref, reactive, watch, computed, toRefs, onMounted, resolveComponent } from 'vue'
 import {
   SmileOutlined,
   DownOutlined,
@@ -217,8 +228,23 @@ export default {
     }
     const submitLoading = ref(false)
     const visible = ref(false)
-    const createRecord = () => {
+    const createRecord = async () => {
       visible.value = true
+      const data = {
+        name: 'lwp',
+        age: '24',
+        description: 'desc',
+        sex: '男'
+      }
+      const res = await new Promise(resolve => {
+        setTimeout(() => {
+          resolve(data)
+        }, 2000)
+      })
+      form.name = data.name
+      form.age = data.age
+      form.description = data.description
+      form.sex = data.sex
     }
     /**头像上传逻辑 */
     const uploadFileModel = reactive({
@@ -253,6 +279,7 @@ export default {
       }
     }
     const handleCancel = () => {
+      ruleForm.value.resetFields()
       visible.value = false
     }
     const handleSubmit = () => {
@@ -273,7 +300,25 @@ export default {
       /** 重新刷新数据 */
       await refreshTableData(params)
     }
-
+    const searchRes = reactive({
+      options: [],
+      spining: false
+    })
+    const handleSearch = async value => {
+      searchRes.spining = true
+      const res = await new Promise(resolve => {
+        const list = [1, 2, 3, 4].map(item => {
+          return {
+            value: `${value}${item}`
+          }
+        })
+        setTimeout(() => {
+          resolve(list)
+        }, 2000)
+      })
+      searchRes.options = res
+      searchRes.spining = false
+    }
     return {
       columns,
       list,
@@ -299,7 +344,9 @@ export default {
       handleSubmit,
 
       EditRecord,
-      DelRecord
+      DelRecord,
+      handleSearch,
+      ...toRefs(searchRes)
     }
   }
 }
