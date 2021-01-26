@@ -63,13 +63,6 @@ export function upload(data) {
   })
 }
 
-/** 下载 */
-export function downloadFile(params) {
-  return request.download({
-    url: '/downloadFile',
-    params
-  })
-}
 /** 用户登录 */
 export function login(data) {
   return request({
