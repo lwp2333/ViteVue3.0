@@ -6,8 +6,8 @@
 export const NotEmpty = str => {
   return {
     required: true,
-    message: `请填写${str}`,
-    trigger: 'blur',
+    message: `请输入${str}`,
+    trigger: 'change',
     whitespace: true
   }
 }
@@ -51,8 +51,8 @@ export const limitStr = (str, min = 3, max = 8) => {
     required: true,
     min,
     max,
-    message: `请填写${str}, 规则：长度限制在${min}~${max}之间`,
-    trigger: 'blur',
+    message: `请输入${str}, 规则：长度限制在${min}~${max}之间`,
+    trigger: 'change',
     type: 'string',
     whitespace: true
   }
@@ -69,8 +69,8 @@ export const nickStr = (str, min = 3, max = 8) => {
     pattern: /^\w+$/,
     min,
     max,
-    message: `请填写${str}, 规则：长度限制在${min}~${max}之间的英文/数字/下划线`,
-    trigger: 'blur',
+    message: `请输入${str}, 规则：长度限制在${min}~${max}之间的英文/数字/下划线`,
+    trigger: 'change',
     type: 'string'
   }
 }
@@ -82,8 +82,8 @@ export const phoneStr = () => {
   return {
     required: true,
     pattern: /^(1[3-9])\d{9}/,
-    message: `请填写正确的手机号码`,
-    trigger: 'blur',
+    message: `请输入正确的手机号码`,
+    trigger: 'change',
     type: 'string'
   }
 }
@@ -95,8 +95,8 @@ export const idCardStr = () => {
   return {
     required: true,
     pattern: /(^\d{15}$)|(^\d{17}(\d|X|x)$)/,
-    message: `请填写正确的身份证号码`,
-    trigger: 'blur',
+    message: `请输入正确的身份证号码`,
+    trigger: 'change',
     type: 'string'
   }
 }
@@ -107,8 +107,8 @@ export const idCardStr = () => {
 export const emailStr = () => {
   return {
     required: true,
-    message: `请填写正确的邮箱`,
-    trigger: 'blur',
+    message: `请输入正确的邮箱`,
+    trigger: 'change',
     type: 'email'
   }
 }

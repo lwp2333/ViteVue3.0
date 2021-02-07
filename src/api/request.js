@@ -2,7 +2,7 @@ import axios from 'axios'
 import { message } from 'ant-design-vue'
 import { setAccessToken, getAccessToken, setRefreshToken, getRefreshToken, removeAllToken } from '/@/utils/auth'
 import router from '../router/index'
-import { autologin } from '/@/api/user'
+import { autologin } from '/@/api/login'
 message.config({
   top: `64px`,
   duration: 2,
@@ -123,7 +123,14 @@ service.interceptors.response.use(
 //增加一个axios 实例service的属性download
 service.download = async ({ url, params }) => {
   const fullUrl = baseURL + url // 注意baseURL最后是否有'/', url一般都写了'/'，所以环境变量配置url的最后一般不加'/'
-  const res = await axios.get(fullUrl, { params, responseType: 'blob' })
+  const res = await axios.get(fullUrl, {
+    params,
+    responseType: 'blob',
+    headers: {
+      accessToken: getAccessToken(),
+      refreshToken: getRefreshToken()
+    }
+  })
   if (!res.data) {
     message.error('文件下载失败')
     return

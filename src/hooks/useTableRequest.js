@@ -1,22 +1,23 @@
-import { reactive, ref, toRefs, watch, watchEffect } from 'vue'
+import { onMounted, reactive, ref, toRefs, watch, watchEffect } from 'vue'
 /**
  *
  * @param {*} Api 传入的异步请求
  * @param {*} params  传入的参数，包含初始分页 （响应式数据）
  * @param {*} needLoading  是否加载 效果
  */
-export default function (Api = () => {}, params = null, needLoading = false) {
+export default function (Api = () => {}, params = {}, options = {}) {
+  const { pageNum = 1, pageSize = 10, watchFiled = true, needLoading = true, debounceTime = 600 } = options
   const tableLoading = ref(false)
-
   const tableData = reactive({
     list: []
   })
   const tableError = reactive({
     err: null
   })
+  const tableTimer = ref(null)
   const tablePagination = reactive({
-    current: params.pageNum,
-    pageSize: params.pageSize,
+    current: pageNum,
+    pageSize: pageSize,
     total: 0,
     hideOnSinglePage: false,
     showSizeChanger: true,
@@ -35,8 +36,6 @@ export default function (Api = () => {}, params = null, needLoading = false) {
     Api(data)
       .then(res => {
         tableData.list = res.list
-        tablePagination.current = res.pageNum
-        tablePagination.pageSize = res.pageSize
         tablePagination.total = res.totalRecord
         tableLoading.value = false
       })
@@ -63,10 +62,34 @@ export default function (Api = () => {}, params = null, needLoading = false) {
     }
     initTableData(data)
   }
-  /** 初始化数据, 及params的改变，刷新数据，且保持最初的分页条件 */
-  watchEffect(() => {
-    initTableData(params)
+  // params 筛选项改变 查询数据
+  const queryTableData = () => {
+    // 重置页码为1
+    tablePagination.current = 1
+    const { current, pageSize } = tablePagination
+    const data = {
+      ...params,
+      pageNum: current,
+      pageSize
+    }
+    initTableData(data)
+  }
+
+  // 初始化数据
+  onMounted(() => {
+    queryTableData()
   })
-  const Action = [initTableData, tablePaginationChange]
+  //监听params的改变，刷新数据*/
+  if (watchFiled) {
+    watch([params], () => {
+      tableTimer.value && clearTimeout(tableTimer.value)
+      tablePagination.current = 1
+      tableTimer.value = setTimeout(() => {
+        queryTableData()
+      }, debounceTime)
+    })
+  }
+
+  const Action = [queryTableData, tablePaginationChange]
   return { ...toRefs(tableData), tablePagination, tableError, tableLoading, Action }
 }
