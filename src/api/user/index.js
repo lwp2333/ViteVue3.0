@@ -53,37 +53,3 @@ export function getUserDetail(params) {
     params
   })
 }
-
-/** 上传头像 */
-export function upload(data) {
-  return request({
-    url: '/upload',
-    method: 'post',
-    data
-  })
-}
-
-/** 下载 */
-export function downloadFile(params) {
-  return request.download({
-    url: '/downloadFile',
-    params
-  })
-}
-/** 用户登录 */
-export function login(data) {
-  return request({
-    url: '/login',
-    method: 'post',
-    data
-  })
-}
-
-/** 自动重新登录 */
-export function autologin(data) {
-  return request({
-    url: '/autoLogin',
-    method: 'post',
-    data
-  })
-}

@@ -2,7 +2,7 @@ import axios from 'axios'
 import { message } from 'ant-design-vue'
 import { setAccessToken, getAccessToken, setRefreshToken, getRefreshToken, removeAllToken } from '/@/utils/auth'
 import router from '../router/index'
-import { autologin } from '/@/api/user'
+import { autologin } from '/@/api/login'
 message.config({
   top: `64px`,
   duration: 2,

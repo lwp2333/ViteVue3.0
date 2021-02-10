@@ -3,10 +3,14 @@
     <div class="topAction">
       <a-row type="flex" justify="space-between" align="middle">
         <a-col>
-          <a-select v-model:value="params.sex" allowClear size="small" placeholder="请选择性别">
-            <a-select-option value="男"> 男 </a-select-option>
-            <a-select-option value="女"> 女 </a-select-option>
-          </a-select>
+          <a-space>
+            <a-input v-model:value="params.name" allowClear size="small" placeholder="请输入姓名" />
+            <a-select v-model:value="params.sex" allowClear size="small" placeholder="请选择性别">
+              <a-select-option value="男"> 男 </a-select-option>
+              <a-select-option value="女"> 女 </a-select-option>
+            </a-select>
+            <a-input-number v-model:value="params.age" size="small" placeholder="请输入年龄" />
+          </a-space>
         </a-col>
         <a-col>
           <a-button type="link" size="small" @click="createRecord">
@@ -138,7 +142,8 @@ import {
   LoadingOutlined,
   PlusOutlined
 } from '@ant-design/icons-vue'
-import { getUserListByPage, delUser, createUser, downloadFile } from '/@/api/user'
+import { getUserListByPage, delUser, createUser } from '/@/api/user'
+import { downloadFile } from '/@/api/common'
 import { message } from 'ant-design-vue'
 import useTableRequest from '/@/hooks/useTableRequest'
 export default {
@@ -199,8 +204,8 @@ export default {
     ]
     // 将params 作为响应式数据，可以在useTableRequest 自动更新
     const params = reactive({
-      pageNum: 1,
-      pageSize: 4,
+      name: null,
+      age: null,
       sex: null
     })
     const {
@@ -209,7 +214,7 @@ export default {
       tableError,
       tableLoading,
       Action: [refreshTableData, tablePaginationChange]
-    } = useTableRequest(getUserListByPage, params, true)
+    } = useTableRequest(getUserListByPage, params, { pageNum: 1, pageSize: 4 })
     const colorList = ['pink', 'orange', 'green', 'cyan', 'blue', 'purple']
     /**
      *  创建逻辑

@@ -27,7 +27,7 @@ export function getRoleDetail(params) {
   })
 }
 
-/** 获取角色详情*/
+/** 获取角色菜单详情*/
 export function getRoleMenuTree(params) {
   return request({
     url: '/getRoleMenuTree',
@@ -60,5 +60,13 @@ export function createRole(data) {
     url: '/createRole',
     method: 'post',
     data
+  })
+}
+
+/** 导出 */
+export function exportExcel(params) {
+  return request.download({
+    url: '/exportExcel',
+    params
   })
 }

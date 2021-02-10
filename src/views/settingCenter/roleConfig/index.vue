@@ -19,7 +19,7 @@
           <a-col v-bind="formItemCol">
             <a-form-item label="其他操作">
               <a-space>
-                <a-button type="primary">新增角色</a-button>
+                <a-button type="primary" @click="hanldeExport">导出角色</a-button>
               </a-space>
             </a-form-item>
           </a-col>
@@ -86,7 +86,7 @@ import { ref, reactive, watch, computed, toRefs, onMounted } from 'vue'
 import { formLabelCol, formWrapperCol, formItemCol } from '/@/constant/rowColOptions'
 import useTableRequest from '/@/hooks/useTableRequest'
 import useDeviceInfo from '/@/hooks/useDeviceInfo'
-import { getRoleListByPage, getRoleDetail, updateRole } from '/@/api/role'
+import { getRoleListByPage, getRoleDetail, updateRole, exportExcel } from '/@/api/role'
 import { getMenuList } from '/@/api/menu'
 import iconFont from '/@/components/global/iconFont.js'
 export default {
@@ -159,6 +159,10 @@ export default {
         configDrawerShow.value = false
       })
     }
+    const hanldeExport = () => {
+      const fileName = '123.xlsx'
+      exportExcel({ fileName })
+    }
     return {
       formLabelCol,
       formWrapperCol,
@@ -182,7 +186,8 @@ export default {
       deviceHeight,
       devicePixelRatio,
       deviceScreenType,
-      mapResultWidth
+      mapResultWidth,
+      hanldeExport
     }
   }
 }
