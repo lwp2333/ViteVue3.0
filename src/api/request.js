@@ -86,6 +86,9 @@ const redirectToLogin = () => {
 // 响应拦截
 service.interceptors.response.use(
   res => {
+    if (res.request.responseType === 'blob') {
+      return res
+    }
     switch (res.data.code) {
       case 200:
         return successRes(res)
@@ -121,16 +124,28 @@ service.interceptors.response.use(
   }
 )
 //增加一个axios 实例service的属性download
-service.download = async ({ url, params }) => {
-  const fullUrl = baseURL + url // 注意baseURL最后是否有'/', url一般都写了'/'，所以环境变量配置url的最后一般不加'/'
-  const res = await axios.get(fullUrl, { params, responseType: 'blob' })
+service.download = async ({ url, params = null, data = null, method = 'get' }) => {
+  const res = await service(url, { method, params, data, responseType: 'blob' }).catch(err => {
+    console.log(err)
+  })
   if (!res.data) {
     message.error('文件下载失败')
     return
   }
-  // 保存文件
-  const { fileName } = params
-  
+
+  let fileName = null
+  // 取headers 里面 文件名
+  fileName = res.headers['content-disposition'].match(/filename\*=UTF-8''(.*)/)[1]
+  fileName = decodeURIComponent(fileName)
+
+  // 取参数文件名 (前端指定)
+  if (data) {
+    fileName = data.fileName ? data.fileName : fileName
+  }
+  if (params) {
+    fileName = params.fileName ? params.fileName : fileName
+  }
+  // 浏览器保存文件
   let blobUrl = window.URL.createObjectURL(res.data)
   let link = document.createElement('a')
   link.href = blobUrl
